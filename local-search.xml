@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>上传文章</title>
+    <link href="/2025/06/20/%E4%B8%8A%E4%BC%A0%E6%96%87%E7%AB%A0/"/>
+    <url>/2025/06/20/%E4%B8%8A%E4%BC%A0%E6%96%87%E7%AB%A0/</url>
+    
+    <content type="html"><![CDATA[<blockquote><p>记录上传博客的操作步骤————第一篇文章</p></blockquote><h2 id="本地操作"><a href="#本地操作" class="headerlink" title="本地操作"></a>本地操作</h2><p>博客网站是借用<strong>github、hexo、fluid</strong>搭建的静态网页，其中github相当于提供服务器服务（github pages），但是只能存放静态网页，所以博客的发布需要作者从本地更新整个网站再上传到github，其他人才能看到。之所以选择这套方案，主要是作者现在作为学生米还是不够多🤣，再者该方案作为笔记系统已经足够满足我的需求了😊。</p><p>所以本地操作基于<strong>hexo</strong>创建一个本地网页，网页语言使用markdown即可。首先进入网站工作目录，终端输入：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">hexo new post 文章名<br></code></pre></td></tr></table></figure><p>该操作会在<code>/source/_posts/</code>目录下生成一个md文件，在该文件中即可编写文章内容。md文件中的图片插入则使用以下命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">&#123;% asset_img xxx.png title %&#125;<br></code></pre></td></tr></table></figure><p>图片放入该目录下的文章同名目录下。</p><p>写完文章后，使用以下命令更新本地的静态网站：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">hexo g -d<br><span class="hljs-comment"># 使用该命令可以通过https://localhost:4000访问本地网站</span><br>hexo s <br></code></pre></td></tr></table></figure><h2 id="上传github"><a href="#上传github" class="headerlink" title="上传github"></a>上传github</h2><p>可以把文件目录直接push到github，也可以安装<strong>hexo-deployer-git</strong>自动化上传。安装命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">npm install hexo-deployer-git --save<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>博客操作</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>hexo</tag>
+      
+      <tag>github</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>
