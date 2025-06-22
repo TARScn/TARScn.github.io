@@ -19,23 +19,22 @@
   <meta name="author" content="Chengxiang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="记录上传博客的操作步骤————第一篇文章  本地操作博客网站是借用github、hexo、fluid搭建的静态网页，其中github相当于提供服务器服务（github pages），但是只能存放静态网页，所以博客的发布需要作者从本地更新整个网站再上传到github，其他人才能看到。之所以选择这套方案，主要是作者现在作为学生米还是不够多🤣，再者该方案作为笔记系统已经足够满足我的需求了😊。 所以">
+    <meta name="description" content="这本书采用redis为2.8，现在（2025年）redis更新版本到了7.x，作者下载redis源码版本为7.0.15。但是询问GPT得到的答案为基本数据结构没有大变动，但是新版本新添加了一些数据结构。 简单动态字符串（SDS）What is SDS书中sds结构体定义如下： 123456789struct sdshdr &#123;    &#x2F;&#x2F; 记录 buf 数组中已使用字节的数量    &#x2F;&#x2F;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="上传文章">
-<meta property="og:url" content="http://example.com/2025/06/20/%E4%B8%8A%E4%BC%A0%E6%96%87%E7%AB%A0/index.html">
+<meta property="og:title" content="redis设计与实现读书笔记一--数据结构">
+<meta property="og:url" content="http://example.com/2025/06/22/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.html">
 <meta property="og:site_name" content="TARScn">
-<meta property="og:description" content="记录上传博客的操作步骤————第一篇文章  本地操作博客网站是借用github、hexo、fluid搭建的静态网页，其中github相当于提供服务器服务（github pages），但是只能存放静态网页，所以博客的发布需要作者从本地更新整个网站再上传到github，其他人才能看到。之所以选择这套方案，主要是作者现在作为学生米还是不够多🤣，再者该方案作为笔记系统已经足够满足我的需求了😊。 所以">
+<meta property="og:description" content="这本书采用redis为2.8，现在（2025年）redis更新版本到了7.x，作者下载redis源码版本为7.0.15。但是询问GPT得到的答案为基本数据结构没有大变动，但是新版本新添加了一些数据结构。 简单动态字符串（SDS）What is SDS书中sds结构体定义如下： 123456789struct sdshdr &#123;    &#x2F;&#x2F; 记录 buf 数组中已使用字节的数量    &#x2F;&#x2F;">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-06-20T09:34:31.000Z">
-<meta property="article:modified_time" content="2025-06-20T10:22:16.278Z">
+<meta property="article:published_time" content="2025-06-21T16:52:46.000Z">
+<meta property="article:modified_time" content="2025-06-22T08:42:32.813Z">
 <meta property="article:author" content="Chengxiang">
-<meta property="article:tag" content="hexo">
-<meta property="article:tag" content="github">
+<meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>上传文章 - TARScn</title>
+  <title>redis设计与实现读书笔记一--数据结构 - TARScn</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -201,7 +200,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="上传文章"></span>
+            <span id="subtitle" data-typed-text="redis设计与实现读书笔记一--数据结构"></span>
           
         </div>
 
@@ -217,8 +216,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2025-06-20 17:34" pubdate>
-          2025年6月20日 下午
+        <time datetime="2025-06-22 00:52" pubdate>
+          2025年6月22日 凌晨
         </time>
       </span>
     
@@ -229,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          325 字
+          476 字
         
       </span>
     
@@ -240,7 +239,7 @@
         
         
         
-          3 分钟
+          4 分钟
         
       </span>
     
@@ -277,25 +276,24 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">上传文章</h1>
+            <h1 id="seo-header">redis设计与实现读书笔记一--数据结构</h1>
             
             
               <div class="markdown-body">
                 
-                <blockquote>
-<p>记录上传博客的操作步骤————第一篇文章</p>
-</blockquote>
-<h2 id="本地操作"><a href="#本地操作" class="headerlink" title="本地操作"></a>本地操作</h2><p>博客网站是借用<strong>github、hexo、fluid</strong>搭建的静态网页，其中github相当于提供服务器服务（github pages），但是只能存放静态网页，所以博客的发布需要作者从本地更新整个网站再上传到github，其他人才能看到。之所以选择这套方案，主要是作者现在作为学生米还是不够多🤣，再者该方案作为笔记系统已经足够满足我的需求了😊。</p>
-<p>所以本地操作基于<strong>hexo</strong>创建一个本地网页，网页语言使用markdown即可。首先进入网站工作目录，终端输入：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">hexo new post 文章名<br></code></pre></td></tr></table></figure>
-<p>该操作会在<code>/source/_posts/</code>目录下生成一个md文件，在该文件中即可编写文章内容。md文件中的图片插入则使用以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">&#123;% asset_img xxx.png title %&#125;<br></code></pre></td></tr></table></figure>
-<p>图片放入该目录下的文章同名目录下。</p>
-<p>写完文章后，使用以下命令更新本地的静态网站：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">hexo g -d<br><span class="hljs-comment"># 使用该命令可以通过https://localhost:4000访问本地网站</span><br>hexo s <br></code></pre></td></tr></table></figure>
-
-<h2 id="上传github"><a href="#上传github" class="headerlink" title="上传github"></a>上传github</h2><p>可以把文件目录直接push到github，也可以安装<strong>hexo-deployer-git</strong>自动化上传。安装命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">npm install hexo-deployer-git --save<br></code></pre></td></tr></table></figure>
+                <p>这本书采用redis为2.8，现在（2025年）redis更新版本到了7.x，作者下载redis源码版本为7.0.15。但是询问GPT得到的答案为基本数据结构没有大变动，但是新版本新添加了一些数据结构。</p>
+<h2 id="简单动态字符串（SDS）"><a href="#简单动态字符串（SDS）" class="headerlink" title="简单动态字符串（SDS）"></a>简单动态字符串（SDS）</h2><h3 id="What-is-SDS"><a href="#What-is-SDS" class="headerlink" title="What is SDS"></a>What is SDS</h3><p>书中sds结构体定义如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">sdshdr</span> &#123;<br>    <span class="hljs-comment">// 记录 buf 数组中已使用字节的数量</span><br>    <span class="hljs-comment">// 等于SDS 所保存字符串的长度</span><br>    <span class="hljs-type">int</span> len:<br>    <span class="hljs-comment">// 记录 buf 数组中未使用字节的数量</span><br>    <span class="hljs-type">int</span> free;<br>    <span class="hljs-comment">// 字节数组,用于保存字符串</span><br>    <span class="hljs-type">char</span> buf [];<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>redis（7.0.15）中的定义为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">__attribute__</span> ((__packed__)) sdshdr8 &#123;<br>    <span class="hljs-comment">// 实际使用的字节数</span><br>    <span class="hljs-type">uint8_t</span> len; <br>    <span class="hljs-comment">// 分配的总字节数，不包括头和\0结尾</span><br>    <span class="hljs-type">uint8_t</span> alloc; <span class="hljs-comment">/* excluding the header and null terminator */</span><br>    <span class="hljs-comment">// 记录SDS类型（8、16、32）</span><br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> flags; <span class="hljs-comment">/* 3 lsb of type, 5 unused bits */</span><br>    <span class="hljs-type">char</span> buf[];<br>&#125;;<br></code></pre></td></tr></table></figure>
+<h3 id="Why-is-SDS"><a href="#Why-is-SDS" class="headerlink" title="Why is SDS"></a>Why is SDS</h3><ul>
+<li><p>字符串长度快速查询<br>C语言中字符串查询长度复制度$O(n)$，而SDS中查询字符串长度的复杂度为$O(1)$，因为SDS中可以直接查字长len。记录字长也为SDS避免了后续修改字符串导致缓冲溢出的问题。</p>
+</li>
+<li><p>预分配与惰性空间<br>为了避免多次字符串修改导致的<strong>反复内存重分配</strong>，SDS使用了预分配与惰性空间的策略。<br>具体体现为：对SDS做拼接等增加字符的操作时，SDS会多分配一些内存空间；对SDS做截断等删除字符的操作时，SDS并不会把free的空间全部回收，而是做保留。<br>这种策略可以视为以空间换时间，提高了SDS的操作速度性能。</p>
+</li>
+<li><p>二进制安全<br>C语言的字符串默认以’\0’作为结尾标志，所以无法支持具有中间’\0’的数据。而SDS由于使用len记录字长，所以SDS中的数据可以包含任意个’\0’，而不用担心数据无法正常读取。</p>
+</li>
+</ul>
 
                 
               </div>
@@ -314,7 +312,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E5%8D%9A%E5%AE%A2%E6%93%8D%E4%BD%9C/" class="category-chain-item">博客操作</a>
+  <a href="/categories/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" class="category-chain-item">redis设计与实现读书笔记</a>
   
   
 
@@ -329,9 +327,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/hexo/" class="print-no-link">#hexo</a>
-      
-        <a href="/tags/github/" class="print-no-link">#github</a>
+        <a href="/tags/redis/" class="print-no-link">#redis</a>
       
     </div>
   
@@ -345,15 +341,15 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/06/22/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" title="redis设计与实现读书笔记一--数据结构">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">redis设计与实现读书笔记一--数据结构</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2025/06/20/%E4%B8%8A%E4%BC%A0%E6%96%87%E7%AB%A0/" title="上传文章">
+                        <span class="hidden-mobile">上传文章</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
