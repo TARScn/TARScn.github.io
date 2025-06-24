@@ -26,11 +26,13 @@
 <meta property="og:site_name" content="TARScn">
 <meta property="og:description" content="这本书采用redis为2.8，现在（2025年）redis更新版本到了7.x，作者下载redis源码版本为7.0.15。但是询问GPT得到的答案为基本数据结构没有大变动，但是新版本新添加了一些数据结构。 简单动态字符串（SDS） What is SDS 书中sds结构体定义如下： 123456789struct sdshdr &#123;    &#x2F;&#x2F; 记录 buf 数组中已使用字节的数量">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/fluid.png">
 <meta property="article:published_time" content="2025-06-21T16:52:46.000Z">
-<meta property="article:modified_time" content="2025-06-24T03:22:27.776Z">
+<meta property="article:modified_time" content="2025-06-24T04:11:03.552Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/fluid.png">
   
   
   
@@ -310,6 +312,7 @@ class="math inline"><em>O</em>(1)</span>，因为SDS中可以直接查字长len�
 <li><p><strong>链表list结构</strong> <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs objectivec"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> list &#123;<br>    listNode *head;<br>    listNode *tail;<br>    <span class="hljs-comment">// 节点值复制函数</span><br>    <span class="hljs-type">void</span> *(*dup)(<span class="hljs-type">void</span> *ptr);<br>    <span class="hljs-comment">// 节点值释放函数</span><br>    <span class="hljs-type">void</span> (*free)(<span class="hljs-type">void</span> *ptr);<br>    <span class="hljs-comment">// 节点值对比函数</span><br>    <span class="hljs-type">int</span> (*match)(<span class="hljs-type">void</span> *ptr, <span class="hljs-type">void</span> *key);<br>    <span class="hljs-comment">// 链表所包含的节点数量</span><br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> len;<br>&#125; list;<br></code></pre></td></tr></table></figure></p></li>
 </ul>
 
+<p><img src="/img/fluid.png" srcset="/img/loading.gif" lazyload /></p>
 <h3 id="why-is-listnode-and-list">Why is listnode and list</h3>
 <ul>
 <li><strong>双端</strong></li>
