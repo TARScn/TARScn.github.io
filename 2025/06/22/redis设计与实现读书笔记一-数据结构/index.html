@@ -27,7 +27,7 @@
 <meta property="og:description" content="这本书采用redis为2.8，现在（2025年）redis更新版本到了7.x，作者下载redis源码版本为7.0.15。但是询问GPT得到的答案为基本数据结构没有大变动，但是新版本新添加了一些数据结构。 简单动态字符串（SDS） What is SDS 书中sds结构体定义如下： 123456789struct sdshdr &#123;    &#x2F;&#x2F; 记录 buf 数组中已使用字节的数量">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-06-21T16:52:46.000Z">
-<meta property="article:modified_time" content="2025-06-22T09:02:42.124Z">
+<meta property="article:modified_time" content="2025-06-24T03:22:27.776Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary_large_image">
@@ -228,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          481 字
+          691 字
         
       </span>
     
@@ -239,7 +239,7 @@
         
         
         
-          5 分钟
+          6 分钟
         
       </span>
     
@@ -303,6 +303,33 @@ class="math inline"><em>O</em>(1)</span>，因为SDS中可以直接查字长len�
 <li><strong>二进制安全</strong></li>
 </ul>
 <p>C语言的字符串默认以’\0’作为结尾标志，所以无法支持具有中间’\0’的数据，如<strong>图片、压缩包</strong>等。而SDS由于使用len记录字长，所以SDS中的数据可以包含任意个’\0’，而不用担心数据无法正常读取。</p>
+<h2 id="链表listnode">链表(listNode)</h2>
+<h3 id="what-is-listnode-and-list">What is listNode and list</h3>
+<ul>
+<li><p><strong>链表节点listNode结构</strong> <figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs gauss">typedef <span class="hljs-keyword">struct</span> <span class="hljs-type">listNode</span> &#123;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-type">listNode</span> *prev;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-type">listNode</span> *next;<br>    void *value;<br>&#125; listNode;<br></code></pre></td></tr></table></figure></p></li>
+<li><p><strong>链表list结构</strong> <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs objectivec"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> list &#123;<br>    listNode *head;<br>    listNode *tail;<br>    <span class="hljs-comment">// 节点值复制函数</span><br>    <span class="hljs-type">void</span> *(*dup)(<span class="hljs-type">void</span> *ptr);<br>    <span class="hljs-comment">// 节点值释放函数</span><br>    <span class="hljs-type">void</span> (*free)(<span class="hljs-type">void</span> *ptr);<br>    <span class="hljs-comment">// 节点值对比函数</span><br>    <span class="hljs-type">int</span> (*match)(<span class="hljs-type">void</span> *ptr, <span class="hljs-type">void</span> *key);<br>    <span class="hljs-comment">// 链表所包含的节点数量</span><br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> len;<br>&#125; list;<br></code></pre></td></tr></table></figure></p></li>
+</ul>
+
+<h3 id="why-is-listnode-and-list">Why is listnode and list</h3>
+<ul>
+<li><strong>双端</strong></li>
+</ul>
+<p>链表节点带有<strong>prev</strong>和<strong>next</strong>指针,获取某个节点的前置节点和后置节点的复杂度都是<span
+class="math inline"><em>O</em>(1)</span>。</p>
+<ul>
+<li><strong>表头表尾</strong></li>
+</ul>
+<p>链表list带有<strong>head</strong>和<strong>tail</strong>指针,获取链表的表头节点和表尾节点的复杂度都是<span
+class="math inline"><em>O</em>(1)</span>。</p>
+<ul>
+<li><strong>节点计数器</strong></li>
+</ul>
+<p>链表list带有节点计数器<strong>len</strong>,获取链表中的节点数量复杂度是<span
+class="math inline"><em>O</em>(1)</span>。</p>
+<ul>
+<li><strong>多态</strong></li>
+</ul>
+<p>链表节点中的<strong>value</strong>的指针类型是*<strong>void</strong>,所以链表可以保存各类不同类型的值。</p>
 
                 
               </div>
