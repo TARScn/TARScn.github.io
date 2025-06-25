@@ -34,7 +34,7 @@
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/ziplistNt.png">
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/ziplistEntry.png">
 <meta property="article:published_time" content="2025-06-21T16:52:46.000Z">
-<meta property="article:modified_time" content="2025-06-25T07:52:33.917Z">
+<meta property="article:modified_time" content="2025-06-25T08:04:52.581Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary_large_image">
@@ -236,7 +236,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.7k 字
+          1.9k 字
         
       </span>
     
@@ -247,7 +247,7 @@
         
         
         
-          15 分钟
+          16 分钟
         
       </span>
     
@@ -389,7 +389,7 @@ alt="使用链表解决k2和k1的冲突" />
 <h2 id="压缩列表ziplist">压缩列表（ziplist）</h2>
 <h3 id="ziplist实现">ziplist实现</h3>
 <p>压缩列表是 Redis
-为了节约内存而开发的,是由一系列特殊编码的连续内存块组成的顺序型(sequential)数据结构。一个压缩列表可以包含任意多个节点(entry),每个节点可以保存一个<strong>字节数组</strong>或者一个<strong>整数值</strong>。</p>
+为了<strong>节约内存</strong>而开发的,是由一系列特殊编码的连续内存块组成的顺序型(sequential)数据结构。一个压缩列表可以包含任意多个节点(entry),每个节点可以保存一个<strong>字节数组</strong>或者一个<strong>整数值</strong>。</p>
 <p>一个ziplist的构成如下图。</p>
 <figure>
 <img src="/img/redis设计与实现读书笔记一-数据结构/ziplistEx.png" srcset="/img/loading.gif" lazyload
@@ -425,6 +425,17 @@ src="/img/redis设计与实现读书笔记一-数据结构/ziplistEncode.png" sr
 <li><strong>content</strong></li>
 </ul>
 <p>节点的content属性负责保存节点的值,节点值可以是一个字节数组或者整数,值的类型和长度由节点的encoding属性决定。</p>
+<h3 id="ziplist特性">ziplist特性</h3>
+<ul>
+<li><strong>连锁更新</strong></li>
+</ul>
+<p>由于单个entry中<strong>previous_entry_length</strong>有1字节和5字节两次长度，所以由某个节点<strong>previous_entry_length</strong>改变导致的其他多个节点的<strong>previous_entry_length</strong>改变的现象，被称为连锁更新。
+连锁更新在最坏情况下需要对压缩列表执行N次空间重分配操作,而每次空间重分配的最坏复杂度为<span
+class="math inline"><em>O</em>(<em>N</em>)</span>,所以连锁更新的最坏复杂度为<span
+class="math inline"><em>O</em>(<em>N</em><sup>2</sup>)</span>。</p>
+<h3 id="quicklist">quicklist</h3>
+<p>由于ziplist存在连锁更新等一些其他缺点，在redis
+3.2后逐步被quicklist取代，它是ziplist与双向链表的混合体，兼顾节省内存和插入效率。</p>
 
                 
               </div>
