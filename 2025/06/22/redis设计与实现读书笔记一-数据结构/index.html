@@ -33,8 +33,9 @@
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/ziplistEx.png">
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/ziplistNt.png">
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/ziplistEntry.png">
+<meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/ziplistEncode.png">
 <meta property="article:published_time" content="2025-06-21T16:52:46.000Z">
-<meta property="article:modified_time" content="2025-06-25T08:04:52.581Z">
+<meta property="article:modified_time" content="2025-06-25T08:06:37.563Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary_large_image">
@@ -419,8 +420,11 @@ entry length 属性的长度可以是1字节或者5字节。 1)
 <li><strong>encoding</strong></li>
 </ul>
 <p>节点的encoding属性记录了节点的content属性所保存数据的类型以及长度。</p>
-<p><img
-src="/img/redis设计与实现读书笔记一-数据结构/ziplistEncode.png" srcset="/img/loading.gif" lazyload /></p>
+<figure>
+<img src="/img/redis设计与实现读书笔记一-数据结构/ziplistEncode.png" srcset="/img/loading.gif" lazyload
+alt="encoding说明" />
+<figcaption aria-hidden="true">encoding说明</figcaption>
+</figure>
 <ul>
 <li><strong>content</strong></li>
 </ul>
