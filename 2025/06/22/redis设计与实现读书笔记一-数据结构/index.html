@@ -34,9 +34,13 @@
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/ziplistNt.png">
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/ziplistEntry.png">
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/ziplistEncode.png">
+<meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/listpack.png">
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/objectType.png">
+<meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/hashByziplist.png">
+<meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/hashByziplist2.png">
+<meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/hashBydict.png">
 <meta property="article:published_time" content="2025-06-21T16:52:46.000Z">
-<meta property="article:modified_time" content="2025-06-26T06:13:09.156Z">
+<meta property="article:modified_time" content="2025-06-26T08:30:31.302Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary_large_image">
@@ -238,7 +242,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.3k 字
+          2.5k 字
         
       </span>
     
@@ -249,7 +253,7 @@
         
         
         
-          20 分钟
+          22 分钟
         
       </span>
     
@@ -294,8 +298,8 @@
                 <p>这本书采用redis为2.8，现在（2025年）redis更新版本到了7.x，作者下载redis源码版本为7.0.15。但是询问GPT得到的答案为基本数据结构没有大变动，但是新版本新添加了一些数据结构。</p>
 <h2 id="简单动态字符串sds">简单动态字符串（SDS）</h2>
 <h3 id="sds实现">SDS实现</h3>
-<p>书中sds结构体定义如下： <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">sdshdr</span> &#123;<br>    <span class="hljs-comment">// 记录 buf 数组中已使用字节的数量</span><br>    <span class="hljs-comment">// 等于SDS 所保存字符串的长度</span><br>    <span class="hljs-type">int</span> len:<br>    <span class="hljs-comment">// 记录 buf 数组中未使用字节的数量</span><br>    <span class="hljs-type">int</span> free;<br>    <span class="hljs-comment">// 字节数组,用于保存字符串</span><br>    <span class="hljs-type">char</span> buf [];<br>&#125;;<br></code></pre></td></tr></table></figure> redis（7.0.15）中的定义为：
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">__attribute__</span> ((__packed__)) sdshdr8 &#123;<br>    <span class="hljs-comment">// 实际使用的字节数</span><br>    <span class="hljs-type">uint8_t</span> len; <br>    <span class="hljs-comment">// 分配的总字节数，不包括头和\0结尾</span><br>    <span class="hljs-type">uint8_t</span> alloc; <span class="hljs-comment">/* excluding the header and null terminator */</span><br>    <span class="hljs-comment">// 记录SDS类型（8、16、32）</span><br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> flags; <span class="hljs-comment">/* 3 lsb of type, 5 unused bits */</span><br>    <span class="hljs-type">char</span> buf[];<br>&#125;;<br></code></pre></td></tr></table></figure></p>
+<p>书中sds结构体定义如下： <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">sdshdr</span> &#123;<br>    <span class="hljs-comment">// 记录 buf 数组中已使用字节的数量</span><br>    <span class="hljs-comment">// 等于SDS 所保存字符串的长度</span><br>    <span class="hljs-type">int</span> len:<br>    <span class="hljs-comment">// 记录 buf 数组中未使用字节的数量</span><br>    <span class="hljs-type">int</span> free;<br>    <span class="hljs-comment">// 字节数组,用于保存字符串</span><br>    <span class="hljs-type">char</span> buf [];<br>&#125;;<br></code></pre></td></tr></table></figure> redis（7.0.15）中的定义为：
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">__attribute__</span> ((__packed__)) sdshdr8 &#123;<br>    <span class="hljs-comment">// 实际使用的字节数</span><br>    <span class="hljs-type">uint8_t</span> len; <br>    <span class="hljs-comment">// 分配的总字节数，不包括头和\0结尾</span><br>    <span class="hljs-type">uint8_t</span> alloc; <span class="hljs-comment">/* excluding the header and null terminator */</span><br>    <span class="hljs-comment">// 记录SDS类型（8、16、32）</span><br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> flags; <span class="hljs-comment">/* 3 lsb of type, 5 unused bits */</span><br>    <span class="hljs-type">char</span> buf[];<br>&#125;;<br></code></pre></td></tr></table></figure></p>
 <h3 id="sds特性">SDS特性</h3>
 <ul>
 <li><strong>字符串长度快速查询</strong></li>
@@ -316,8 +320,8 @@ class="math inline"><em>O</em>(1)</span>，因为SDS中可以直接查字长len�
 <h2 id="链表listnode">链表(listNode)</h2>
 <h3 id="listnodelist实现">listNode&amp;list实现</h3>
 <ul>
-<li><p><strong>链表节点listNode结构</strong> <figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs gauss">typedef <span class="hljs-keyword">struct</span> <span class="hljs-type">listNode</span> &#123;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-type">listNode</span> *prev;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-type">listNode</span> *next;<br>    void *value;<br>&#125; listNode;<br></code></pre></td></tr></table></figure></p></li>
-<li><p><strong>链表list结构</strong> <figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs objectivec"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> list &#123;<br>    listNode *head;<br>    listNode *tail;<br>    <span class="hljs-comment">// 节点值复制函数</span><br>    <span class="hljs-type">void</span> *(*dup)(<span class="hljs-type">void</span> *ptr);<br>    <span class="hljs-comment">// 节点值释放函数</span><br>    <span class="hljs-type">void</span> (*free)(<span class="hljs-type">void</span> *ptr);<br>    <span class="hljs-comment">// 节点值对比函数</span><br>    <span class="hljs-type">int</span> (*match)(<span class="hljs-type">void</span> *ptr, <span class="hljs-type">void</span> *key);<br>    <span class="hljs-comment">// 链表所包含的节点数量</span><br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> len;<br>&#125; list;<br></code></pre></td></tr></table></figure></p></li>
+<li><p><strong>链表节点listNode结构</strong> <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">listNode</span> &#123;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">listNode</span> *prev;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">listNode</span> *next;<br>    <span class="hljs-type">void</span> *value;<br>&#125; listNode;<br></code></pre></td></tr></table></figure></p></li>
+<li><p><strong>链表list结构</strong> <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">list</span> &#123;<br>    listNode *head;<br>    listNode *tail;<br>    <span class="hljs-comment">// 节点值复制函数</span><br>    <span class="hljs-type">void</span> *(*dup)(<span class="hljs-type">void</span> *ptr);<br>    <span class="hljs-comment">// 节点值释放函数</span><br>    <span class="hljs-built_in">void</span> (*free)(<span class="hljs-type">void</span> *ptr);<br>    <span class="hljs-comment">// 节点值对比函数</span><br>    <span class="hljs-built_in">int</span> (*match)(<span class="hljs-type">void</span> *ptr, <span class="hljs-type">void</span> *key);<br>    <span class="hljs-comment">// 链表所包含的节点数量</span><br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> len;<br>&#125; list;<br></code></pre></td></tr></table></figure></p></li>
 </ul>
 <figure>
 <img src="/img/redis设计与实现读书笔记一-数据结构/list.png" srcset="/img/loading.gif" lazyload
@@ -354,8 +358,8 @@ alt="哈希表" />
 <figcaption aria-hidden="true">哈希表</figcaption>
 </figure>
 <p>redis的字典本质是一个哈希表，redis中定义如下：</p>
-<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">dict</span> &#123;<br>    <span class="hljs-comment">// 哈希表数组</span><br>    dictEntry **table;<br>    dictType *type;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> size;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> sizemask;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> used;<br>    <span class="hljs-type">void</span> *privdata;<br>&#125; dict;<br></code></pre></td></tr></table></figure>
-<p>哈希表节点： <figure class="highlight fsharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs fsharp">typedef <span class="hljs-keyword">struct</span> <span class="hljs-keyword">dictEntry</span> &#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-operator">*</span>key;<br>    <span class="hljs-keyword">void</span> <span class="hljs-operator">*</span><span class="hljs-keyword">val</span>;<br>    <span class="hljs-keyword">struct</span> dictEntry <span class="hljs-operator">*</span>next;<br>&#125; dictEntry;<br></code></pre></td></tr></table></figure></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">dict</span> &#123;<br>    <span class="hljs-comment">// 哈希表数组</span><br>    dictEntry **table;<br>    dictType *type;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> size;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> sizemask;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> used;<br>    <span class="hljs-type">void</span> *privdata;<br>&#125; dict;<br></code></pre></td></tr></table></figure>
+<p>哈希表节点： <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">dictEntry</span> &#123;<br>    <span class="hljs-type">void</span> *key;<br>    <span class="hljs-type">void</span> *val;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">dictEntry</span> *next;<br>&#125; dictEntry;<br></code></pre></td></tr></table></figure></p>
 <h3 id="哈希冲突">哈希冲突</h3>
 <p>面对两个及以上key映射到同一个索引的情况，redis使用单向链表解决。</p>
 <figure>
@@ -370,7 +374,7 @@ alt="使用链表解决k2和k1的冲突" />
 </figure>
 <h2 id="整数集合intset">整数集合（intset）</h2>
 <h3 id="intset实现">intset实现</h3>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs angelscript"><span class="hljs-keyword">typedef</span> struct <span class="hljs-built_in">int</span><span class="hljs-keyword">set</span> &#123;<br>  <span class="hljs-comment">// 编码方式</span><br>  <span class="hljs-built_in">uint32</span>_t encoding;<br>  <span class="hljs-comment">// 集合包含的元素数量</span><br>  <span class="hljs-built_in">uint32</span>_t length;<br>  <span class="hljs-comment">// 保存元素的数组</span><br>  <span class="hljs-built_in">int8</span>_t contents [];<br>&#125; <span class="hljs-built_in">int</span><span class="hljs-keyword">set</span>;<br></code></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">intset</span> &#123;<br>  <span class="hljs-comment">// 编码方式</span><br>  <span class="hljs-type">uint32_t</span> encoding;<br>  <span class="hljs-comment">// 集合包含的元素数量</span><br>  <span class="hljs-type">uint32_t</span> length;<br>  <span class="hljs-comment">// 保存元素的数组</span><br>  <span class="hljs-type">int8_t</span> contents [];<br>&#125; intset;<br></code></pre></td></tr></table></figure>
 <p>contents数组是整数集合的底层实现:整数集合的每个元素都是contents数组的一个数组项
 (item)，各个项在数组中按值的大小从小到大<strong>有序排列</strong>,并且数组中不包含任何重复项。</p>
 <p>length属性记录了整数集合包含的元素数量,也即是contents数组的长度。虽然intset结构将contents属性声明为int8_t类型的数组,但实际上contents数组并不保存任何int8_t类型的值,contents数组的真正类型取决于encoding属性的值。</p>
@@ -438,13 +442,27 @@ alt="encoding说明" />
 连锁更新在最坏情况下需要对压缩列表执行N次空间重分配操作,而每次空间重分配的最坏复杂度为<span
 class="math inline"><em>O</em>(<em>N</em>)</span>,所以连锁更新的最坏复杂度为<span
 class="math inline"><em>O</em>(<em>N</em><sup>2</sup>)</span>。</p>
-<h3 id="quicklist">quicklist</h3>
+<h3 id="listpack">listpack</h3>
 <p>由于ziplist存在连锁更新等一些其他缺点，在redis
-3.2后逐步被quicklist取代，它是ziplist与双向链表的混合体，兼顾节省内存和插入效率。</p>
+3后逐步被listpack取代。</p>
+<figure>
+<img src="/img/redis设计与实现读书笔记一-数据结构/listpack.png" srcset="/img/loading.gif" lazyload
+alt="listpack结构" />
+<figcaption aria-hidden="true">listpack结构</figcaption>
+</figure>
+<ul>
+<li>totalbytes：listpack 占用的字节数，4 字节</li>
+<li>size：listpack 节点数量，2 字节</li>
+<li>element：节点元素</li>
+<li>end：结尾符 0xFF 1 字节</li>
+</ul>
+<p>由于listpack只记录自身节点的长度，所以节点之间独立不会互相影响。</p>
+<h3 id="quicklist">quicklist</h3>
+<p>quicklist是listpack与双向链表的混合体，兼顾节省内存和插入效率。</p>
 <h2 id="对象redisobject">对象（redisObject）</h2>
 <p>redis并没有直接使用以上提到的数据结构实现键值对数据库，而是基于其构建了一个对象系统。</p>
 <h3 id="对象的编码和类型">对象的编码和类型</h3>
-<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> redisObject &#123;<br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">type</span>:<span class="hljs-number">4</span>;<br>    <span class="hljs-keyword">unsigned</span> encoding:<span class="hljs-number">4</span>;<br>    <span class="hljs-keyword">unsigned</span> lru:LRU_BITS; <span class="hljs-comment">/* LRU time (relative to global lru_clock) or</span><br><span class="hljs-comment">                            * LFU data (least significant 8 bits frequency</span><br><span class="hljs-comment">                            * and most significant 16 bits access time). */</span><br>    <span class="hljs-keyword">int</span> refcount;<br>    <span class="hljs-comment">// 指向对象的底层实现数据结构</span><br>    <span class="hljs-keyword">void</span> *ptr;<br>&#125; robj;<br></code></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">redisObject</span> &#123;<br>    <span class="hljs-type">unsigned</span> type:<span class="hljs-number">4</span>;<br>    <span class="hljs-type">unsigned</span> encoding:<span class="hljs-number">4</span>;<br>    <span class="hljs-type">unsigned</span> lru:LRU_BITS; <span class="hljs-comment">/* LRU time (relative to global lru_clock) or</span><br><span class="hljs-comment">                            * LFU data (least significant 8 bits frequency</span><br><span class="hljs-comment">                            * and most significant 16 bits access time). */</span><br>    <span class="hljs-type">int</span> refcount;<br>    <span class="hljs-comment">// 指向对象的底层实现数据结构</span><br>    <span class="hljs-type">void</span> *ptr;<br>&#125; robj;<br></code></pre></td></tr></table></figure>
 <h4 id="类型-type">类型-type</h4>
 <p>redis的对象有以下五种类型：</p>
 <figure>
@@ -510,6 +528,33 @@ alt="对象的类型" />
 <li>对象头和SDS字符串分开，两个指针内存。</li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs 内存结构">[ robj ]     -&gt;     [ sds结构 | 字符串内容 ]<br>（分开 malloc 两块内存）<br></code></pre></td></tr></table></figure>
+<h3 id="列表对象">列表对象</h3>
+<p>从 Redis 3.2
+开始，列表对象的底层统一使用<strong>quicklist</strong>编码，取代了老版本的ziplist和linkedlist。
+&gt; quicklist = 多个<strong>ziplist</strong>节点组成的双向链表结构 &gt;
+它结合了 ziplist（紧凑、连续）和 linkedlist（快速插入/删除）的优点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs quicklist">[ziplist1] &lt;-&gt; [ziplist2] &lt;-&gt; [ziplist3] ...<br></code></pre></td></tr></table></figure>
+<h3 id="哈希对象">哈希对象</h3>
+<p>哈希对象的编码方式为<strong>listpack</strong>或者<strong>hashtable</strong>，listpack用于小型哈希表，而hashtable则用于大型哈希表。</p>
+<p>listpack编码实现的哈希对象原理与ziplist编码相同。</p>
+<figure>
+<img src="/img/redis设计与实现读书笔记一-数据结构/hashByziplist.png" srcset="/img/loading.gif" lazyload
+alt="ziplist编码的哈希对象" />
+<figcaption aria-hidden="true">ziplist编码的哈希对象</figcaption>
+</figure>
+<p>添加顺序如下：</p>
+<figure>
+<img src="/img/redis设计与实现读书笔记一-数据结构/hashByziplist2.png" srcset="/img/loading.gif" lazyload
+alt="ziplist编码的哈希对象的底层实现" />
+<figcaption
+aria-hidden="true">ziplist编码的哈希对象的底层实现</figcaption>
+</figure>
+<p>hashtable编码底层使用字典实现哈希对象。</p>
+<figure>
+<img src="/img/redis设计与实现读书笔记一-数据结构/hashBydict.png" srcset="/img/loading.gif" lazyload
+alt="hashtable编码的哈希对象" />
+<figcaption aria-hidden="true">hashtable编码的哈希对象</figcaption>
+</figure>
 
                 
               </div>
