@@ -19,12 +19,12 @@
   <meta name="author" content="Chengxiang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="数据库 服务器中的数据库 12345678struct redisServer&#123;    &#x2F;&#x2F; ...    &#x2F;&#x2F; 数据库数组，保存服务器中的所有数据库    redisDb *db;    &#x2F;&#x2F; 服务器中的数据库数量    int dbnum;    &#x2F;&#x2F; ...&#125;; dbnum的值有服务器配置的database选项决定，默认为16。 客户端状态redisClient结">
+    <meta name="description" content="数据库服务器中的数据库12345678struct redisServer&#123;    &#x2F;&#x2F; ...    &#x2F;&#x2F; 数据库数组，保存服务器中的所有数据库    redisDb *db;    &#x2F;&#x2F; 服务器中的数据库数量    int dbnum;    &#x2F;&#x2F; ...&#125;;  dbnum的值有服务器配置的database选项决定，默认为16。 客户端状态redisClient结构的db属">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis设计与实现读书笔记二--单机数据库">
 <meta property="og:url" content="http://example.com/2025/06/27/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/index.html">
 <meta property="og:site_name" content="TARScn">
-<meta property="og:description" content="数据库 服务器中的数据库 12345678struct redisServer&#123;    &#x2F;&#x2F; ...    &#x2F;&#x2F; 数据库数组，保存服务器中的所有数据库    redisDb *db;    &#x2F;&#x2F; 服务器中的数据库数量    int dbnum;    &#x2F;&#x2F; ...&#125;; dbnum的值有服务器配置的database选项决定，默认为16。 客户端状态redisClient结">
+<meta property="og:description" content="数据库服务器中的数据库12345678struct redisServer&#123;    &#x2F;&#x2F; ...    &#x2F;&#x2F; 数据库数组，保存服务器中的所有数据库    redisDb *db;    &#x2F;&#x2F; 服务器中的数据库数量    int dbnum;    &#x2F;&#x2F; ...&#125;;  dbnum的值有服务器配置的database选项决定，默认为16。 客户端状态redisClient结构的db属">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/redisDb.png">
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/keySpace.png">
@@ -241,7 +241,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.9k 字
+          1.8k 字
         
       </span>
     
@@ -294,156 +294,88 @@
             
               <div class="markdown-body">
                 
-                <h2 id="数据库">数据库</h2>
-<h3 id="服务器中的数据库">服务器中的数据库</h3>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">redisServer</span>&#123;<br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// 数据库数组，保存服务器中的所有数据库</span><br>    redisDb *db;<br>    <span class="hljs-comment">// 服务器中的数据库数量</span><br>    <span class="hljs-type">int</span> dbnum;<br>    <span class="hljs-comment">// ...</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+                <h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><h3 id="服务器中的数据库"><a href="#服务器中的数据库" class="headerlink" title="服务器中的数据库"></a>服务器中的数据库</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">redisServer</span>&#123;<br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// 数据库数组，保存服务器中的所有数据库</span><br>    redisDb *db;<br>    <span class="hljs-comment">// 服务器中的数据库数量</span><br>    <span class="hljs-type">int</span> dbnum;<br>    <span class="hljs-comment">// ...</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
 <p>dbnum的值有服务器配置的database选项决定，默认为16。</p>
 <p>客户端状态redisClient结构的db属性记录了客户端当前的目标数据库：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">redisClient</span>&#123;<br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// 记录客户端当前使用的数据库</span><br>    redisDb *db;<br>    <span class="hljs-comment">// ...</span><br>&#125; redisClient;<br></code></pre></td></tr></table></figure>
-<figure>
-<img src="/img/redis设计与实现读书笔记二-单机数据库/redisDb.png" srcset="/img/loading.gif" lazyload
-alt="客户端的目标数据库为1号数据库" />
-<figcaption
-aria-hidden="true">客户端的目标数据库为1号数据库</figcaption>
-</figure>
-<h3 id="数据库键空间">数据库键空间</h3>
-<p>redis是一个键值对数据库服务器，服务器中的数据器结构redisDb中的<strong>dict</strong>字典保存了数据库中的所有键值对，这个字典被称为<strong>键空间</strong>（key
-space）。</p>
-<figure>
-<img src="/img/redis设计与实现读书笔记二-单机数据库/keySpace.png" srcset="/img/loading.gif" lazyload
-alt="键空间例子" />
-<figcaption aria-hidden="true">键空间例子</figcaption>
-</figure>
+
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/redisDb.png" srcset="/img/loading.gif" lazyload alt="客户端的目标数据库为1号数据库"></p>
+<h3 id="数据库键空间"><a href="#数据库键空间" class="headerlink" title="数据库键空间"></a>数据库键空间</h3><p>redis是一个键值对数据库服务器，服务器中的数据器结构redisDb中的<strong>dict</strong>字典保存了数据库中的所有键值对，这个字典被称为<strong>键空间</strong>（key space）。</p>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/keySpace.png" srcset="/img/loading.gif" lazyload alt="键空间例子"></p>
 <p>数据库的操作如添加、删除、更新、取值等都是键空间操作。</p>
-<h3 id="键的过期机制">键的过期机制</h3>
-<p>redisDb中的<strong>expires</strong>字典保存了数据库中所有键的过期时间。</p>
+<h3 id="键的过期机制"><a href="#键的过期机制" class="headerlink" title="键的过期机制"></a>键的过期机制</h3><p>redisDb中的<strong>expires</strong>字典保存了数据库中所有键的过期时间。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">redisDb</span>&#123;<br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// 数据键空间，保存键空间所有的键值对</span><br>    dict *dict;<br>    <span class="hljs-comment">// 过期字典，保存键值对的过期时间</span><br>    dict *expires;<br>    <span class="hljs-comment">// ...</span><br>&#125;redisDb;<br></code></pre></td></tr></table></figure>
-<figure>
-<img src="/img/redis设计与实现读书笔记二-单机数据库/expires.png" srcset="/img/loading.gif" lazyload
-alt="带过期字典的数据库例子" />
-<figcaption aria-hidden="true">带过期字典的数据库例子</figcaption>
-</figure>
+
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/expires.png" srcset="/img/loading.gif" lazyload alt="带过期字典的数据库例子"></p>
 <ul>
 <li>过期字典的键是一个指针，指向键空间中的某个键对象</li>
-<li>过期字典的值是一个long
-long类型的整数，过期时间–一个毫秒精度的UNIX时间戳</li>
+<li>过期字典的值是一个long long类型的整数，过期时间–一个毫秒精度的UNIX时间戳</li>
 </ul>
-<h3 id="过期键的删除">过期键的删除</h3>
-<p>redis过期键的删除策略为<strong>定期删除</strong>和<strong>惰性删除</strong>。</p>
-<h4 id="定期删除">定期删除</h4>
-<p>定期删除策略每隔一段固定时间执行一次删除过期键操作，并通过限制删除操作执行的时长和频率来减少对CPU时间的影响。</p>
+<h3 id="过期键的删除"><a href="#过期键的删除" class="headerlink" title="过期键的删除"></a>过期键的删除</h3><p>redis过期键的删除策略为<strong>定期删除</strong>和<strong>惰性删除</strong>。</p>
+<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>定期删除策略每隔一段固定时间执行一次删除过期键操作，并通过限制删除操作执行的时长和频率来减少对CPU时间的影响。</p>
 <p>redis周期性操作进行时，activaExpireCycle函数会在规定的时间内，分多次遍历服务器中的各个数据库，从数据库的<strong>expires</strong>字典中随机检查部分键的过期时间，并删除其中的过期键。</p>
-<h4 id="惰性删除">惰性删除</h4>
-<p>惰性删除是指程序只会在取出键时才会对键进行过期检查，删除的目标仅限于当前操作键，避免了浪费CPU时间，但是redis是内存服务器，这一策略会造成内存浪费。</p>
+<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>惰性删除是指程序只会在取出键时才会对键进行过期检查，删除的目标仅限于当前操作键，避免了浪费CPU时间，但是redis是内存服务器，这一策略会造成内存浪费。</p>
 <blockquote>
 <p>redis同时采用了<strong>定期删除和惰性删除并结合</strong>。</p>
 </blockquote>
-<h2 id="rdb持久化">RDB持久化</h2>
-<p>redis是一个内存数据库，当服务器进程退出时，数据库状态也会消失。redis提供了RDB持久化功能，可以手动开启，也可以定期保存。RDB持久化功能生成的文件是一个经过压缩的二进制文件，可通过这个文件还原数据库状态。</p>
-<figure>
-<img src="/img/redis设计与实现读书笔记二-单机数据库/RDB.png" srcset="/img/loading.gif" lazyload
-alt="数据库和RDB文件互相转换" />
-<figcaption aria-hidden="true">数据库和RDB文件互相转换</figcaption>
-</figure>
+<h2 id="RDB持久化"><a href="#RDB持久化" class="headerlink" title="RDB持久化"></a>RDB持久化</h2><p>redis是一个内存数据库，当服务器进程退出时，数据库状态也会消失。redis提供了RDB持久化功能，可以手动开启，也可以定期保存。RDB持久化功能生成的文件是一个经过压缩的二进制文件，可通过这个文件还原数据库状态。</p>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/RDB.png" srcset="/img/loading.gif" lazyload alt="数据库和RDB文件互相转换"></p>
 <blockquote>
 <p>RDB文件通过演进，老版本的redis无法兼容新版本的RDB，因为有部分数据结构不匹配。</p>
 </blockquote>
-<h3 id="保存与载入">保存与载入</h3>
-<p>当AOF持久化功能开启时，redis会优先使用AOF，因为AOF更新频率更高。
-创建RDB文件创建RDB文件有<strong>SAVE</strong>和<strong>BGSAVE</strong>两个命令。</p>
+<h3 id="保存与载入"><a href="#保存与载入" class="headerlink" title="保存与载入"></a>保存与载入</h3><p>当AOF持久化功能开启时，redis会优先使用AOF，因为AOF更新频率更高。<br>创建RDB文件创建RDB文件有<strong>SAVE</strong>和<strong>BGSAVE</strong>两个命令。</p>
 <ul>
-<li><strong>SAVE</strong> 直接创建RDB文件，会中断服务器程序</li>
-<li><strong>BGSAVE</strong>
-父程序会fork一个子程序，由子程序创建RDB文件，不会中断服务器程序。</li>
+<li><strong>SAVE</strong><br>直接创建RDB文件，会中断服务器程序</li>
+<li><strong>BGSAVE</strong><br>父程序会fork一个子程序，由子程序创建RDB文件，不会中断服务器程序。</li>
 </ul>
-<p>保存的RDB文件名字叫做<strong>dump.rdb</strong>，存放位置需要通过<strong>redis.conf</strong>设置，否则默认当前的工作目录下。
-开启redis时，自动载入<strong>dump.rdb</strong>，载入RDB文件时，服务器程序会出于阻塞状态，直到载入工作完成。</p>
+<p>保存的RDB文件名字叫做<strong>dump.rdb</strong>，存放位置需要通过<strong>redis.conf</strong>设置，否则默认当前的工作目录下。<br>开启redis时，自动载入<strong>dump.rdb</strong>，载入RDB文件时，服务器程序会出于阻塞状态，直到载入工作完成。</p>
 <p>保存条件设置如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 只要满足以下三个条件中的任何一个，BGSAVE都会执行</span><br><span class="hljs-comment"># 服务器在900秒内，对数据库进行了至少1次修改</span><br>save 900 1<br><span class="hljs-comment"># 服务器在300秒内，对数据库进行了至少10次修改</span><br>save 300 10<br><span class="hljs-comment"># 服务器在60秒内，对数据库进行了至少10000次修改</span><br>save 60 10000<br></code></pre></td></tr></table></figure>
-<h3 id="rdb文件结构">RDB文件结构</h3>
-<p>下图为一个完整的RDB文件结构：</p>
-<figure>
-<img src="/img/redis设计与实现读书笔记二-单机数据库/rdbfile.png" srcset="/img/loading.gif" lazyload
-alt="RDB文件结构" />
-<figcaption aria-hidden="true">RDB文件结构</figcaption>
-</figure>
+
+<h3 id="RDB文件结构"><a href="#RDB文件结构" class="headerlink" title="RDB文件结构"></a>RDB文件结构</h3><p>下图为一个完整的RDB文件结构：</p>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/rdbfile.png" srcset="/img/loading.gif" lazyload alt="RDB文件结构"></p>
 <p>database结构如下：</p>
-<figure>
-<img src="/img/redis设计与实现读书笔记二-单机数据库/rdbDatabase.png" srcset="/img/loading.gif" lazyload
-alt="database结构" />
-<figcaption aria-hidden="true">database结构</figcaption>
-</figure>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/rdbDatabase.png" srcset="/img/loading.gif" lazyload alt="database结构"></p>
 <p>key_value_pairs结构如下：</p>
-<figure>
-<img src="/img/redis设计与实现读书笔记二-单机数据库/key_value_pairs.png" srcset="/img/loading.gif" lazyload
-alt="带过期时间的key_value_pairs结构" />
-<figcaption
-aria-hidden="true">带过期时间的key_value_pairs结构</figcaption>
-</figure>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/key_value_pairs.png" srcset="/img/loading.gif" lazyload alt="带过期时间的key_value_pairs结构"></p>
 <p>无过期时间的结构只有TYPE、key、value。</p>
-<h2 id="aof持久化">AOF持久化</h2>
-<p>AOF持久化是通过redis服务器所执行的写命令来记录数据库状态的。</p>
-<figure>
-<img src="/img/redis设计与实现读书笔记二-单机数据库/AOF.png" srcset="/img/loading.gif" lazyload
-alt="AOF持久化" />
-<figcaption aria-hidden="true">AOF持久化</figcaption>
-</figure>
-<h3 id="aof持久化的实现">AOF持久化的实现</h3>
-<p>AOF持久化分为命令追加、文件写入、文件同步。</p>
-<ol type="1">
+<h2 id="AOF持久化"><a href="#AOF持久化" class="headerlink" title="AOF持久化"></a>AOF持久化</h2><p>AOF持久化是通过redis服务器所执行的写命令来记录数据库状态的。</p>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/AOF.png" srcset="/img/loading.gif" lazyload alt="AOF持久化"></p>
+<h3 id="AOF持久化的实现"><a href="#AOF持久化的实现" class="headerlink" title="AOF持久化的实现"></a>AOF持久化的实现</h3><p>AOF持久化分为命令追加、文件写入、文件同步。</p>
+<ol>
 <li><strong>命令追加</strong></li>
 </ol>
 <p>AOF持久化开启后，如果redis执行完一个写命令后，会将写命令以协议格式追加到服务器状态的<strong>aof_buf</strong>缓冲区末尾。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">redisServer</span>&#123;<br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// AOF缓冲区</span><br>    sds aof_buf;<br>    <span class="hljs-comment">// ..</span><br>&#125;;<br></code></pre></td></tr></table></figure>
-<ol start="2" type="1">
+
+<ol start="2">
 <li><strong>文件写入与同步</strong></li>
 </ol>
 <p>redis程序是一个<strong>事件循环</strong>，循环中的文件事件负责接收客户端的命令请求，以及向客户端发送命令回复，循环中还包括定时运行的函数。开启AOF持久化后，服务器在结束一次事件循环之前，程序会调用<strong>flushAppendOnlyFile</strong>函数，选择是否将aof_buf中的内容写入和保存到AOF文件里面。</p>
 <p><strong>flushAppendOnlyFile</strong>函数的行为由服务器配置的appendfsync选项决定：</p>
-<figure>
-<img src="/img/redis设计与实现读书笔记二-单机数据库/appendfsync.png" srcset="/img/loading.gif" lazyload
-alt="appendfsync配置不同的持久化行为" />
-<figcaption
-aria-hidden="true">appendfsync配置不同的持久化行为</figcaption>
-</figure>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/appendfsync.png" srcset="/img/loading.gif" lazyload alt="appendfsync配置不同的持久化行为"></p>
 <blockquote>
 <p>写入（<strong>write</strong>）在linux中只是把数据写入到内核页缓存，并未真正落盘。只有同步到硬盘才是落盘。</p>
 </blockquote>
-<h3 id="aof文件载入和数据库还原">AOF文件载入和数据库还原</h3>
-<p>关键点在于创建一个不联网的伪客户端，利用伪客户端写入命令。</p>
-<figure>
-<img src="/img/redis设计与实现读书笔记二-单机数据库/aofLoad.png" srcset="/img/loading.gif" lazyload
-alt="AOF文件载入过程" />
-<figcaption aria-hidden="true">AOF文件载入过程</figcaption>
-</figure>
-<h3 id="aof重写">AOF重写</h3>
-<p>为了避免记录过多写命令导致的AOF文件庞大，redis重新生成新的AOF文件替代旧AOF文件被称为<strong>AOF重写</strong>。</p>
+<h3 id="AOF文件载入和数据库还原"><a href="#AOF文件载入和数据库还原" class="headerlink" title="AOF文件载入和数据库还原"></a>AOF文件载入和数据库还原</h3><p>关键点在于创建一个不联网的伪客户端，利用伪客户端写入命令。</p>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/aofLoad.png" srcset="/img/loading.gif" lazyload alt="AOF文件载入过程"></p>
+<h3 id="AOF重写"><a href="#AOF重写" class="headerlink" title="AOF重写"></a>AOF重写</h3><p>为了避免记录过多写命令导致的AOF文件庞大，redis重新生成新的AOF文件替代旧AOF文件被称为<strong>AOF重写</strong>。</p>
 <p><strong>AOF重写是通过读取当前的数据库状态来实现的</strong>，而不用分析旧AOF文件。数据库中存在什么键值对，就写入什么，所以没有一句命令多余。</p>
 <blockquote>
 <p>为了避免在执行命令时造成客户端输入缓冲区溢出，重写程序会检查多元素的数量，超过固定值则通过执行多条命令记录键的值。</p>
 </blockquote>
 <p>为了保证执行AOF重写时，服务器依然可以正常工作，redis使用<strong>AOF后台重写</strong>技术。</p>
 <p>redis会创建一个带有当前数据库所有数据的<strong>子进程</strong>，父进程依旧正常处理客户端命令，子进程执行AOF重写程序。</p>
-<figure>
-<img src="/img/redis设计与实现读书笔记二-单机数据库/aofRewrite.png" srcset="/img/loading.gif" lazyload
-alt="AOF重写" />
-<figcaption aria-hidden="true">AOF重写</figcaption>
-</figure>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/aofRewrite.png" srcset="/img/loading.gif" lazyload alt="AOF重写"></p>
 <p>要让子进程重写结束后的AOF文件与当前父进程中的数据库状态一致，redis服务器在创建子进程之前，会维护一个<strong>AOF重写缓冲区</strong>。这个缓冲区会在子进程执行AOF重写期间，记录服务器执行的所有命令，当子进程完成所有工作之后，服务器将缓冲区中的所有内容添加到重写AOF文件的末尾，最后用这个新AOF文件替代旧文件。</p>
-<h2 id="事件">事件</h2>
-<p>redis是一个事件驱动程序。服务器处理以下两类事件：<strong>文件事件</strong>、<strong>时间事件</strong>。</p>
-<h3 id="文件事件">文件事件</h3>
-<p>redis使用的网络事件处理器被称为<strong>文件事件处理器</strong>。</p>
-<p>文件事件处理器使用<strong>I/O多路复用程序</strong>同时监听多个套接字，为套接字目前执行的不同任务<strong>关联不同的事件处理器</strong>。被监听的套接字准备<strong>执行连接应答、读取、写入、关闭等操作</strong>时，产生对应的文件事件，<strong>文件处理器会调用之前关联的事件处理器</strong>。</p>
+<h2 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h2><p>redis是一个事件驱动程序。服务器处理以下两类事件：<strong>文件事件</strong>、<strong>时间事件</strong>。</p>
+<h3 id="文件事件"><a href="#文件事件" class="headerlink" title="文件事件"></a>文件事件</h3><p>redis使用的网络事件处理器被称为<strong>文件事件处理器</strong>。</p>
+<p>文件事件处理器使用<strong>I&#x2F;O多路复用程序</strong>同时监听多个套接字，为套接字目前执行的不同任务<strong>关联不同的事件处理器</strong>。被监听的套接字准备<strong>执行连接应答、读取、写入、关闭等操作</strong>时，产生对应的文件事件，<strong>文件处理器会调用之前关联的事件处理器</strong>。</p>
 <blockquote>
-<p><strong>I/O多路复用是指一个线程同时监听多个I/O流</strong>，是redis支持高并发的关键
-原理是将所有关注的套接字注册到内核，内核</p>
+<p><strong>I&#x2F;O多路复用是指一个线程同时监听多个I&#x2F;O流</strong>，是redis支持高并发的关键<br>原理是将所有关注的套接字注册到内核，内核</p>
 </blockquote>
-<figure>
-<img src="/img/redis设计与实现读书笔记二-单机数据库/FEH.png" srcset="/img/loading.gif" lazyload
-alt="文件事件处理器的四个部分" />
-<figcaption aria-hidden="true">文件事件处理器的四个部分</figcaption>
-</figure>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/FEH.png" srcset="/img/loading.gif" lazyload alt="文件事件处理器的四个部分"></p>
 
                 
               </div>

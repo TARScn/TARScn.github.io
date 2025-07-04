@@ -19,18 +19,21 @@
   <meta name="author" content="Chengxiang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="AVL树介绍 什么是AVL树？ AVL树（Adelson-Velsky and Landis Tree）是一种自平衡二叉搜索树（Self-Balancing Binary Search Tree）。 它由苏联数学家 G.M. Adelson-Velsky 和 E.M. Landis 于1962年发明，是最早提出的自平衡二叉查找树之一。 特点： - 任何一个节点的左子树和右子树的高度">
+    <meta name="description" content="AVL树介绍什么是AVL树？AVL树（Adelson-Velsky and Landis Tree）是一种自平衡二叉搜索树（Self-Balancing Binary Search Tree）。它由苏联数学家 G.M. Adelson-Velsky 和 E.M. Landis 于1962年发明，是最早提出的自平衡二叉查找树之一。 特点：  任何一个节点的左子树和右子树的高度差（平衡因子）最多为1。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AVL树和红黑树介绍">
 <meta property="og:url" content="http://example.com/2025/07/02/AVL%E6%A0%91%E5%92%8C%E7%BA%A2%E9%BB%91%E6%A0%91%E4%BB%8B%E7%BB%8D/index.html">
 <meta property="og:site_name" content="TARScn">
-<meta property="og:description" content="AVL树介绍 什么是AVL树？ AVL树（Adelson-Velsky and Landis Tree）是一种自平衡二叉搜索树（Self-Balancing Binary Search Tree）。 它由苏联数学家 G.M. Adelson-Velsky 和 E.M. Landis 于1962年发明，是最早提出的自平衡二叉查找树之一。 特点： - 任何一个节点的左子树和右子树的高度">
+<meta property="og:description" content="AVL树介绍什么是AVL树？AVL树（Adelson-Velsky and Landis Tree）是一种自平衡二叉搜索树（Self-Balancing Binary Search Tree）。它由苏联数学家 G.M. Adelson-Velsky 和 E.M. Landis 于1962年发明，是最早提出的自平衡二叉查找树之一。 特点：  任何一个节点的左子树和右子树的高度差（平衡因子）最多为1。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/AVL%E6%A0%91%E5%92%8C%E7%BA%A2%E9%BB%91%E6%A0%91%E4%BB%8B%E7%BB%8D/youxuan.jpg">
+<meta property="og:image" content="http://example.com/img/AVL%E6%A0%91%E5%92%8C%E7%BA%A2%E9%BB%91%E6%A0%91%E4%BB%8B%E7%BB%8D/ranse.jpg">
+<meta property="og:image" content="http://example.com/img/AVL%E6%A0%91%E5%92%8C%E7%BA%A2%E9%BB%91%E6%A0%91%E4%BB%8B%E7%BB%8D/exp1.jpg">
 <meta property="article:published_time" content="2025-07-02T08:37:51.000Z">
-<meta property="article:modified_time" content="2025-07-03T02:29:05.596Z">
+<meta property="article:modified_time" content="2025-07-04T07:30:08.657Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="红黑树">
+<meta property="article:tag" content="AVL树">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/AVL%E6%A0%91%E5%92%8C%E7%BA%A2%E9%BB%91%E6%A0%91%E4%BB%8B%E7%BB%8D/youxuan.jpg">
   
@@ -230,7 +233,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          858 字
+          990 字
         
       </span>
     
@@ -241,7 +244,7 @@
         
         
         
-          8 分钟
+          9 分钟
         
       </span>
     
@@ -283,57 +286,37 @@
             
               <div class="markdown-body">
                 
-                <h1 id="avl树介绍">AVL树介绍</h1>
-<h2 id="什么是avl树">什么是AVL树？</h2>
-<p><strong>AVL树</strong>（Adelson-Velsky and Landis
-Tree）是一种<strong>自平衡二叉搜索树</strong>（Self-Balancing Binary
-Search Tree）。<br />
-它由苏联数学家 <strong>G.M. Adelson-Velsky</strong> 和 <strong>E.M.
-Landis</strong> 于1962年发明，是最早提出的自平衡二叉查找树之一。</p>
-<p><strong>特点：</strong> -
-任何一个节点的左子树和右子树的高度差（平衡因子）最多为1。 -
-保证树的高度始终为O(log
-n)，插入、删除和查找操作都可以在对数时间内完成。</p>
-<h2 id="avl树的定义">AVL树的定义</h2>
-<p>对于树中的每一个节点，定义：</p>
+                <h1 id="AVL树介绍"><a href="#AVL树介绍" class="headerlink" title="AVL树介绍"></a>AVL树介绍</h1><h2 id="什么是AVL树？"><a href="#什么是AVL树？" class="headerlink" title="什么是AVL树？"></a>什么是AVL树？</h2><p><strong>AVL树</strong>（Adelson-Velsky and Landis Tree）是一种<strong>自平衡二叉搜索树</strong>（Self-Balancing Binary Search Tree）。<br>它由苏联数学家 <strong>G.M. Adelson-Velsky</strong> 和 <strong>E.M. Landis</strong> 于1962年发明，是最早提出的自平衡二叉查找树之一。</p>
+<p><strong>特点：</strong></p>
+<ul>
+<li>任何一个节点的左子树和右子树的高度差（平衡因子）最多为1。</li>
+<li>保证树的高度始终为O(log n)，插入、删除和查找操作都可以在对数时间内完成。</li>
+</ul>
+<h2 id="AVL树的定义"><a href="#AVL树的定义" class="headerlink" title="AVL树的定义"></a>AVL树的定义</h2><p>对于树中的每一个节点，定义：</p>
 <ul>
 <li><strong>高度（Height）</strong>：从该节点到叶子节点的最长路径长度（叶子高度为0）。</li>
-<li><strong>平衡因子（Balance Factor, BF）</strong>： [ BF = - ]</li>
-<li>AVL树要求：所有节点的平衡因子必须满足： [ BF {-1, 0, +1} ]</li>
+<li><strong>平衡因子（Balance Factor, BF）</strong>：<br>[<br>BF &#x3D; \text{左子树高度} - \text{右子树高度}<br>]</li>
+<li>AVL树要求：所有节点的平衡因子必须满足：<br>[<br>BF \in {-1, 0, +1}<br>]</li>
 </ul>
-<h2 id="旋转示意图">旋转示意图</h2>
-<p>以下示意展示两种最常用的旋转：</p>
+<h2 id="旋转示意图"><a href="#旋转示意图" class="headerlink" title="旋转示意图"></a>旋转示意图</h2><p>以下示意展示两种最常用的旋转：</p>
 <p><strong>右旋 (Right Rotation)：</strong></p>
-<figure>
-<img src="/img/AVL树和红黑树介绍/youxuan.jpg" srcset="/img/loading.gif" lazyload alt="右旋" />
-<figcaption aria-hidden="true">右旋</figcaption>
-</figure>
+<p><img src="/img/AVL%E6%A0%91%E5%92%8C%E7%BA%A2%E9%BB%91%E6%A0%91%E4%BB%8B%E7%BB%8D/youxuan.jpg" srcset="/img/loading.gif" lazyload alt="右旋"></p>
 <blockquote>
 <p>左旋为右旋的镜像</p>
 </blockquote>
-<h2 id="avl树的基本操作">AVL树的基本操作</h2>
-<h3 id="插入">1. 插入</h3>
-<p>插入节点后，可能破坏树的平衡性。需要沿插入路径向上回溯，并进行<strong>旋转（Rotation）</strong>修复。</p>
-<p>常见的四种情况： - <strong>LL型（左-左）：</strong>
-对不平衡节点进行<strong>右旋</strong>。 -
-<strong>RR型（右-右）：</strong> 对不平衡节点进行<strong>左旋</strong>。
-- <strong>LR型（左-右）：</strong>
-先对左子节点进行<strong>左旋</strong>，再对不平衡节点进行<strong>右旋</strong>。
-- <strong>RL型（右-左）：</strong>
-先对右子节点进行<strong>右旋</strong>，再对不平衡节点进行<strong>左旋</strong>。</p>
-<h3 id="删除">2. 删除</h3>
-<p>删除节点后也可能导致平衡性破坏，需要从删除位置往上回溯，并进行相应的旋转修复。</p>
-<h2 id="示例">示例</h2>
-<p>AVL树插入示例:https://www.bilibili.com/video/BV1uuFpeKEGd?spm_id_from=333.788.videopod.sections&amp;vd_source=1a88fb46407c6a5cc8a52eb1ea305721</p>
-<h1 id="红黑树介绍">红黑树介绍</h1>
-<h2 id="什么是红黑树">什么是红黑树？</h2>
-<p><strong>红黑树（Red-Black Tree）</strong>
-是一种自平衡的<strong>二叉搜索树（BST）</strong>。<br />
-它在插入和删除节点后，通过特定的规则进行调整，使得整棵树保持“近似平衡”，从而保证查找、插入、删除操作的时间复杂度为
-<strong>O(log n)</strong>。</p>
-<h2 id="红黑树的性质">红黑树的性质</h2>
-<p>红黑树每个节点上附加一个颜色属性：<strong>红色（Red）</strong>或<strong>黑色（Black）</strong>，并满足以下五条性质：</p>
-<ol type="1">
+<h2 id="AVL树的基本操作"><a href="#AVL树的基本操作" class="headerlink" title="AVL树的基本操作"></a>AVL树的基本操作</h2><h3 id="1-插入"><a href="#1-插入" class="headerlink" title="1. 插入"></a>1. 插入</h3><p>插入节点后，可能破坏树的平衡性。需要沿插入路径向上回溯，并进行**旋转（Rotation）**修复。</p>
+<p>常见的四种情况：</p>
+<ul>
+<li><strong>LL型（左-左）：</strong> 对不平衡节点进行<strong>右旋</strong>。</li>
+<li><strong>RR型（右-右）：</strong> 对不平衡节点进行<strong>左旋</strong>。</li>
+<li><strong>LR型（左-右）：</strong> 先对左子节点进行<strong>左旋</strong>，再对不平衡节点进行<strong>右旋</strong>。</li>
+<li><strong>RL型（右-左）：</strong> 先对右子节点进行<strong>右旋</strong>，再对不平衡节点进行<strong>左旋</strong>。</li>
+</ul>
+<h3 id="2-删除"><a href="#2-删除" class="headerlink" title="2. 删除"></a>2. 删除</h3><p>删除节点后也可能导致平衡性破坏，需要从删除位置往上回溯，并进行相应的旋转修复。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1uuFpeKEGd?spm_id_from=333.788.videopod.sections&vd_source=1a88fb46407c6a5cc8a52eb1ea305721">AVL树插入示例</a></p>
+<h1 id="红黑树介绍"><a href="#红黑树介绍" class="headerlink" title="红黑树介绍"></a>红黑树介绍</h1><h2 id="什么是红黑树？"><a href="#什么是红黑树？" class="headerlink" title="什么是红黑树？"></a>什么是红黑树？</h2><p><strong>红黑树（Red-Black Tree）</strong> 是一种自平衡的<strong>二叉搜索树（BST）</strong>。<br>它在插入和删除节点后，通过特定的规则进行调整，使得整棵树保持“近似平衡”，从而保证查找、插入、删除操作的时间复杂度为 <strong>O(log n)</strong>。</p>
+<h2 id="红黑树的性质"><a href="#红黑树的性质" class="headerlink" title="红黑树的性质"></a>红黑树的性质</h2><p>红黑树每个节点上附加一个颜色属性：<strong>红色（Red）<strong>或</strong>黑色（Black）</strong>，并满足以下五条性质：</p>
+<ol>
 <li>每个节点要么是红色，要么是黑色。</li>
 <li>根节点是黑色。</li>
 <li>每个叶子节点（NIL节点）是黑色。</li>
@@ -341,25 +324,26 @@ n)，插入、删除和查找操作都可以在对数时间内完成。</p>
 <li>从任一节点到其所有后代叶子节点的路径上，<strong>黑色节点数量相同</strong>。</li>
 </ol>
 <p><strong>红黑树的实质是黑色节点的高度平衡</strong></p>
-<h2 id="红黑树的基本操作">红黑树的基本操作</h2>
-<h3 id="插入insert">1. 插入（Insert）</h3>
-<p>插入节点初始为<strong>红色</strong>，然后根据红黑树性质进行修复：</p>
+<h2 id="红黑树的基本操作"><a href="#红黑树的基本操作" class="headerlink" title="红黑树的基本操作"></a>红黑树的基本操作</h2><h3 id="1-插入（Insert）"><a href="#1-插入（Insert）" class="headerlink" title="1. 插入（Insert）"></a>1. 插入（Insert）</h3><p>插入节点初始为<strong>红色</strong>，然后根据红黑树性质进行修复：</p>
 <ul>
 <li>情况1：新节点的叔叔是红色 → 变色 + 向上递归</li>
-<li>情况2：叔叔是黑色，且当前节点是“内侧” → 旋转 + 变色</li>
-<li>情况3：叔叔是黑色，且当前节点是“外侧” → 直接旋转</li>
+<li>情况2：叔叔是黑色，且当前节点是“外侧” → 变色 + 旋转</li>
+<li>情况3：叔叔是黑色，且当前节点是“内侧” → 旋转 + 变色 + 旋转</li>
 </ul>
-<p><strong>需要注意的是红黑树的叶子是黑色的NIL</strong>
-因为插入节点为红色，所以插入会破坏的性质只可能是性质2和性质4。</p>
-<h3 id="删除delete">2. 删除（Delete）</h3>
-<p>删除一个节点可能破坏黑色平衡，需要使用“<strong>双重黑色</strong>”处理机制，并通过：</p>
+<p><strong>需要注意的是红黑树的叶子是黑色的NIL</strong><br>因为插入节点为红色，所以<strong>插入会破坏的性质只可能是性质2和性质4</strong>。</p>
+<p>关注点在于<strong>红红冲突</strong>，然后考虑叔叔节点是红色还是黑色。</p>
+<p>如果<strong>叔叔节点是红色</strong>则符合情况1，直接将<strong>叔叔节点和父节点染黑，祖父节点染红，接着检查祖父节点如果是根节点则染黑</strong>，递归向上。</p>
+<p>如果<strong>叔叔节点是黑色</strong>则考虑情况2、3，其实情况3可以通过选择转换为情况2。</p>
+<p><img src="/img/AVL%E6%A0%91%E5%92%8C%E7%BA%A2%E9%BB%91%E6%A0%91%E4%BB%8B%E7%BB%8D/ranse.jpg" srcset="/img/loading.gif" lazyload alt="叔叔节点为黑色的处理"></p>
+<p>依次插入1，2，3，4，5，6，7，8生成的红黑树步骤如下</p>
+<p><img src="/img/AVL%E6%A0%91%E5%92%8C%E7%BA%A2%E9%BB%91%E6%A0%91%E4%BB%8B%E7%BB%8D/exp1.jpg" srcset="/img/loading.gif" lazyload alt="例子1"></p>
+<h3 id="2-删除（Delete）"><a href="#2-删除（Delete）" class="headerlink" title="2. 删除（Delete）"></a>2. 删除（Delete）</h3><p>删除一个节点可能破坏黑色平衡，需要使用“<strong>双重黑色</strong>”处理机制，并通过：</p>
 <ul>
 <li>兄弟变色</li>
 <li>旋转</li>
 <li>传递双黑等方式进行修复</li>
 </ul>
-<h3 id="查找search">3. 查找（Search）</h3>
-<p>和普通的二叉搜索树一样，查找过程为从根节点出发，逐层比较关键字。</p>
+<h3 id="3-查找（Search）"><a href="#3-查找（Search）" class="headerlink" title="3. 查找（Search）"></a>3. 查找（Search）</h3><p>和普通的二叉搜索树一样，查找过程为从根节点出发，逐层比较关键字。</p>
 
                 
               </div>
@@ -394,6 +378,8 @@ n)，插入、删除和查找操作都可以在对数时间内完成。</p>
       <i class="iconfont icon-tags"></i>
       
         <a href="/tags/%E7%BA%A2%E9%BB%91%E6%A0%91/" class="print-no-link">#红黑树</a>
+      
+        <a href="/tags/AVL%E6%A0%91/" class="print-no-link">#AVL树</a>
       
     </div>
   
