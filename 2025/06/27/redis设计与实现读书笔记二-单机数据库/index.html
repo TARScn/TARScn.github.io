@@ -38,8 +38,13 @@
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/aofLoad.png">
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/aofRewrite.png">
 <meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/FEH.png">
+<meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/cAndS.png">
+<meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/eventProc.png">
+<meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/cmdClient.png">
+<meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/cmdTable.png">
+<meta property="og:image" content="http://example.com/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/cmdSet.png">
 <meta property="article:published_time" content="2025-06-27T02:45:35.000Z">
-<meta property="article:modified_time" content="2025-07-02T08:42:00.557Z">
+<meta property="article:modified_time" content="2025-07-07T08:04:17.462Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary_large_image">
@@ -241,7 +246,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.8k 字
+          2.8k 字
         
       </span>
     
@@ -252,7 +257,7 @@
         
         
         
-          16 分钟
+          24 分钟
         
       </span>
     
@@ -376,6 +381,56 @@
 <p><strong>I&#x2F;O多路复用是指一个线程同时监听多个I&#x2F;O流</strong>，是redis支持高并发的关键<br>原理是将所有关注的套接字注册到内核，内核</p>
 </blockquote>
 <p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/FEH.png" srcset="/img/loading.gif" lazyload alt="文件事件处理器的四个部分"></p>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/cAndS.png" srcset="/img/loading.gif" lazyload alt="客户端和服务器的通信过程"></p>
+<h3 id="时间事件"><a href="#时间事件" class="headerlink" title="时间事件"></a>时间事件</h3><ul>
+<li>时间事件分为以下两类：</li>
+</ul>
+<p><strong>定时事件</strong>：让程序在指定的时间之后执行一次。</p>
+<p><strong>周期性事件</strong>：让程序每隔指定时间就执行一次。</p>
+<ul>
+<li>时间事件主要由以下三个属性组成：</li>
+</ul>
+<p><strong>id</strong>：全局唯一ID，新事件ID比旧事件ID大。<br><strong>when</strong>：毫秒精度UNIX时间戳，记录到达时间。<br><strong>timeProc</strong>：时间事件处理器，时间事件到达时，服务器调用相应处理器。</p>
+<p>事件处理器返回返回ae.h&#x2F;<strong>AE_NOMORE</strong>，则事件为定时事件：事件到达一次之后被删除。如果是一个<strong>非AE_NOMORE</strong>的数，则为周期性事件，根据返回的值对<strong>when</strong>进行更新，让事件在这段时间之后到达。</p>
+<h3 id="事件的调度和执行"><a href="#事件的调度和执行" class="headerlink" title="事件的调度和执行"></a>事件的调度和执行</h3><p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/eventProc.png" srcset="/img/loading.gif" lazyload alt="事件处理角度下的服务器运行流程"></p>
+<p>服务器轮流处理文件事件和时间事件，处理事件的过程中<strong>不会进行抢占</strong>，因此事件处理器会尽可能减少阻塞时间，必要时主动<strong>让出执行权</strong>，时间事件也会把耗时的持久化操作放在子线程或子进程执行。<br>因为服务器先处理文件事件，所以<strong>时间事件的实际处理时间通常比设定的到达时间晚一些</strong>。</p>
+<h2 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h2><h3 id="客户端属性"><a href="#客户端属性" class="headerlink" title="客户端属性"></a>客户端属性</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">redisClient</span>&#123;<br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-type">int</span> fd;<br>    ...<br>    <span class="hljs-type">int</span> flags;<br>    ...<br>    sds querybuf;<br>    ...<br>    robj **argv;<br>    <span class="hljs-type">int</span> argc;<br>    ...<br>    redisCommand *cmd;<br>    <span class="hljs-comment">// ...</span><br>&#125;redisClient;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>套接字描述符</strong></li>
+</ul>
+<p>客户端状态的<strong>fd</strong>属性记录客户端正在使用的套接字描述符，fd属性为-1则是<strong>伪客户端</strong>（AOF持久化、Lua脚本），普通客户端的fd为大于-1的值。</p>
+<ul>
+<li><strong>标志</strong></li>
+</ul>
+<p>客户端状态的标志属性<strong>flags</strong>记录客户端的<strong>角色（role）</strong>，以及客户端所处的状态。</p>
+<ul>
+<li><strong>输入缓冲区</strong></li>
+</ul>
+<p>客户端状态的<strong>querybuf</strong>输入缓存区用于保存客户端发来的命令请求。输入缓存区的大小会根据输入内容动态地缩小放大，最大<strong>不超过1GB，否则服务器关闭这个客户端</strong>。</p>
+<ul>
+<li><strong>命令与命令参数</strong></li>
+</ul>
+<p>服务器对输入缓存区中的命令请求进行分析，并将得出的<strong>命令参数</strong>和<strong>参数个数</strong>保存在客户端状态的argv和argc属性中。</p>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/cmdClient.png" srcset="/img/loading.gif" lazyload alt="argv和argc示例"></p>
+<p>服务器根据argv[0]的值在<strong>命令表</strong>中查找命令所对应的<strong>命令实现函数</strong>。</p>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/cmdTable.png" srcset="/img/loading.gif" lazyload alt="命令表"></p>
+<p><strong>redisCommand</strong>结构保存了命令的实现函数、命令的标志、命令应给定的参数个数和执行次数、执行时间等统计信息。</p>
+<p>服务器找到对应redisCommand之后，会将客户端状态的<strong>cmd</strong>指针指向它。</p>
+<p><img src="/img/redis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8D%95%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93/cmdSet.png" srcset="/img/loading.gif" lazyload alt="查找命令并设置cmd属性"></p>
+<p>之后，服务器可以通过cmd调用命令实现函数，执行客户端请求命令。</p>
+<ul>
+<li><strong>输出缓冲区</strong></li>
+</ul>
+<p>执行命令所得的命令回复会被保存在客户端状态的输出缓冲区。<br>每个客户端有<strong>两个输出缓冲区可用</strong>，一个<strong>大小固定</strong>（16KB），另一个<strong>大小可变</strong>的。</p>
+<h3 id="客户端的创建和关闭"><a href="#客户端的创建和关闭" class="headerlink" title="客户端的创建和关闭"></a>客户端的创建和关闭</h3><h4 id="创建普通客户端"><a href="#创建普通客户端" class="headerlink" title="创建普通客户端"></a>创建普通客户端</h4><p>客户端通过网络连接服务器，客户端使用connect函数连接服务器时，服务器调用<strong>连接事件处理器</strong>，为客户端创建相应的<strong>客户端状态</strong>，并将新客户端状态添加到服务器状态结构<strong>clients</strong>链表的末尾。</p>
+<h4 id="关闭普通客户端"><a href="#关闭普通客户端" class="headerlink" title="关闭普通客户端"></a>关闭普通客户端</h4><ul>
+<li>客户端进程退出或被杀死，客、服之间的网络连接将被关闭，造成客户端被关闭</li>
+<li>客户端向服务器发送了带有不符合协议格式的命令请求，客户端也会被关闭</li>
+<li>用户为服务器设置了timeout配置选项，客户端空转时间超过之后被关闭（存在一些例外：主服务器、从服务器、BLPOP命令阻塞、执行订阅命令中）。</li>
+<li>客户端发送命令请求大小超过输入缓冲区的大小（默认1GB）</li>
+<li>要发送给客户端的命令回复大小超过了输出缓冲区的限制大小（硬性限制、软件限制）</li>
+</ul>
 
                 
               </div>
