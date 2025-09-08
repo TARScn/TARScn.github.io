@@ -19,26 +19,28 @@
   <meta name="author" content="Chengxiang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="什么是gitGit 是一个开源的分布式版本控制系统，用于敏捷高效地处理任何或小或大的项目。Git 是 Linus Torvalds 为了帮助管理 Linux 内核开发而开发的一个开放源码的版本控制软件。Git 与常用的版本控制工具 CVS, Subversion 等不同，它采用了分布式版本库的方式，不必服务器端软件支持。  git的基本使用操作添加和提交你的本地仓库由 git 维护的三棵“树”组成">
+    <meta name="description" content="数据库储存原理如今储存设备可以大致分为易失性设备和非易失性设备：  易失性设备(Volatile Devices)​​:   断电后数据丢失 支持快速随机访问，字节寻址 在本课程中统称为”内存”   非易失性设备(Non-Volatile Devices)​​:   断电后数据保留 块&#x2F;页寻址(通常4KB) 更适合顺序访问 在本课程中统称为”磁盘”(包括SSD和HDD)  本课程实现的B">
 <meta property="og:type" content="article">
-<meta property="og:title" content="git使用">
-<meta property="og:url" content="http://example.com/2025/08/07/git%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:title" content="CMU15-445(Bustub):project1实现笔记">
+<meta property="og:url" content="http://example.com/2025/09/04/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="TARScn">
-<meta property="og:description" content="什么是gitGit 是一个开源的分布式版本控制系统，用于敏捷高效地处理任何或小或大的项目。Git 是 Linus Torvalds 为了帮助管理 Linux 内核开发而开发的一个开放源码的版本控制软件。Git 与常用的版本控制工具 CVS, Subversion 等不同，它采用了分布式版本库的方式，不必服务器端软件支持。  git的基本使用操作添加和提交你的本地仓库由 git 维护的三棵“树”组成">
+<meta property="og:description" content="数据库储存原理如今储存设备可以大致分为易失性设备和非易失性设备：  易失性设备(Volatile Devices)​​:   断电后数据丢失 支持快速随机访问，字节寻址 在本课程中统称为”内存”   非易失性设备(Non-Volatile Devices)​​:   断电后数据保留 块&#x2F;页寻址(通常4KB) 更适合顺序访问 在本课程中统称为”磁盘”(包括SSD和HDD)  本课程实现的B">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/git%E4%BD%BF%E7%94%A8/git%E5%8E%9F%E7%90%86.png">
-<meta property="og:image" content="http://example.com/img/git%E4%BD%BF%E7%94%A8/%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93.png">
-<meta property="og:image" content="http://example.com/img/git%E4%BD%BF%E7%94%A8/%E5%88%86%E6%94%AF.png">
-<meta property="article:published_time" content="2025-08-07T07:21:53.000Z">
-<meta property="article:modified_time" content="2025-08-07T08:53:21.252Z">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/interactionProcessesDBMS.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LogStructuredStorage.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/IOS.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/bpm.png">
+<meta property="article:published_time" content="2025-09-04T01:32:56.000Z">
+<meta property="article:modified_time" content="2025-09-08T07:43:45.403Z">
 <meta property="article:author" content="Chengxiang">
-<meta property="article:tag" content="git">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="Bustub">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/git%E4%BD%BF%E7%94%A8/git%E5%8E%9F%E7%90%86.png">
+<meta name="twitter:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/interactionProcessesDBMS.png">
   
   
   
-  <title>git使用 - TARScn</title>
+  <title>CMU15-445(Bustub):project1实现笔记 - TARScn</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -204,7 +206,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="git使用"></span>
+            <span id="subtitle" data-typed-text="CMU15-445(Bustub):project1实现笔记"></span>
           
         </div>
 
@@ -220,8 +222,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2025-08-07 15:21" pubdate>
-          2025年8月7日 下午
+        <time datetime="2025-09-04 09:32" pubdate>
+          2025年9月4日 上午
         </time>
       </span>
     
@@ -232,7 +234,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.1k 字
+          739 字
         
       </span>
     
@@ -243,7 +245,7 @@
         
         
         
-          10 分钟
+          7 分钟
         
       </span>
     
@@ -280,71 +282,63 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">git使用</h1>
+            <h1 id="seo-header">CMU15-445(Bustub):project1实现笔记</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="什么是git"><a href="#什么是git" class="headerlink" title="什么是git"></a>什么是git</h2><p>Git 是一个开源的分布式版本控制系统，用于敏捷高效地处理任何或小或大的项目。<br>Git 是 Linus Torvalds 为了帮助管理 Linux 内核开发而开发的一个开放源码的版本控制软件。<br>Git 与常用的版本控制工具 CVS, Subversion 等不同，它采用了分布式版本库的方式，不必服务器端软件支持。</p>
-<p><img src="/img/git%E4%BD%BF%E7%94%A8/git%E5%8E%9F%E7%90%86.png" srcset="/img/loading.gif" lazyload alt="git原理"></p>
-<h2 id="git的基本使用操作"><a href="#git的基本使用操作" class="headerlink" title="git的基本使用操作"></a>git的基本使用操作</h2><h3 id="添加和提交"><a href="#添加和提交" class="headerlink" title="添加和提交"></a>添加和提交</h3><p>你的本地仓库由 git 维护的三棵“树”组成。第一个是你的<strong>工作目录</strong>，它持有实际文件；第二个是<strong>暂存区（Index）</strong>，它像个缓存区域，临时保存你的改动；最后是<strong>HEAD</strong>，它指向你最后一次提交的结果。</p>
-<p><img src="/img/git%E4%BD%BF%E7%94%A8/%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93.png" srcset="/img/loading.gif" lazyload alt="本地仓库"></p>
-<p>你可以提出更改（把它们添加到暂存区），使用如下命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">git add &lt;filename&gt;<br>git add .<br></code></pre></td></tr></table></figure>
-<p>这是 git 基本工作流程的第一步；<br>使用如下命令以实际提交改动：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git commit -m <span class="hljs-string">&quot;提交信息&quot;</span><br></code></pre></td></tr></table></figure>
-<p>现在，你的改动已经提交到了HEAD，但是还没到你的远端仓库。</p>
-<h3 id="推送改动"><a href="#推送改动" class="headerlink" title="推送改动"></a>推送改动</h3><p>执行如下命令以将这些改动提交到远端仓库：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git push origin master<br></code></pre></td></tr></table></figure>
-<p>可以把 master 换成你想要推送的任何分支。<br>如果你还没有克隆现有仓库，并欲将你的仓库连接到某个远程服务器，你可以使用如下命令添加：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git remote add origin &lt;server&gt;<br></code></pre></td></tr></table></figure>
-<p>如此你就能够将你的改动推送到所添加的服务器上去了。</p>
-<ul>
-<li><p>server：<br>HTTPS：<a target="_blank" rel="noopener" href="https://github.com/%E7%94%A8%E6%88%B7%E5%90%8D/%E4%BB%93%E5%BA%93%E5%90%8D.git">https://github.com/用户名/仓库名.git</a><br>SSH：<a href="mailto:&#x67;&#x69;&#116;&#x40;&#x67;&#105;&#116;&#x68;&#x75;&#98;&#x2e;&#x63;&#111;&#109;">git@github.com</a>:用户名&#x2F;仓库名.git</p>
-</li>
-<li><p>origin：<br>远程仓库的默认别名（可自定义，但通常用origin）。</p>
-</li>
-</ul>
-<h3 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h3><p>分支是用来将特性开发绝缘开来的。在你创建仓库的时候，<strong>master</strong>是“默认的”分支。在其他分支上进行开发，完成后再将它们合并到主分支上。</p>
-<p><img src="/img/git%E4%BD%BF%E7%94%A8/%E5%88%86%E6%94%AF.png" srcset="/img/loading.gif" lazyload alt="分支"></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 创建一个叫做“feature_x”的分支，并切换过去：</span><br>git checkout -b feature_x<br><span class="hljs-comment"># 切换回主分支：</span><br>git checkout master<br><span class="hljs-comment"># 再把新建的分支删掉：</span><br>git branch -d feature_x<br><span class="hljs-comment"># 除非你将分支推送到远端仓库，不然该分支就是不为他人所见的：</span><br>git push origin &lt;branch&gt;<br></code></pre></td></tr></table></figure>
-
-<h3 id="更新与合并"><a href="#更新与合并" class="headerlink" title="更新与合并"></a>更新与合并</h3><p>要更新你的本地仓库至最新改动，执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git pull<br></code></pre></td></tr></table></figure>
-<p>以在你的工作目录中<strong>获取（fetch）</strong> 并 <strong>合并(merge)</strong> 远端的改动。<br>要合并其他分支到你的当前分支（例如 master），执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git merge &lt;branch&gt;<br></code></pre></td></tr></table></figure>
-<p>在这两种情况下，git都会尝试去自动合并改动。遗憾的是，这可能并非每次都成功，并可能出现冲突（conflicts）。这时候就需要你修改这些文件来手动合并这些冲突（conflicts）。<br>改完之后，你需要执行如下命令以将它们标记为合并成功：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git add &lt;filename&gt;<br></code></pre></td></tr></table></figure>
-<p>在合并改动之前，你可以使用如下命令预览差异：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git diff &lt;source_branch&gt; &lt;target_branch&gt;<br></code></pre></td></tr></table></figure>
-
-<h3 id="替换本地改动"><a href="#替换本地改动" class="headerlink" title="替换本地改动"></a>替换本地改动</h3><p>假如你操作失误（当然，这最好永远不要发生），你可以使用如下命令替换掉本地改动：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git checkout -- &lt;filename&gt;<br></code></pre></td></tr></table></figure>
-<p>丢弃对指定文件的未提交修改​​将工作区中的文件恢复到最近一次提交（HEAD）或暂存区（如果已 git add）的状态，​​不可逆​​。<br>​适用场景​​</p>
-<ul>
-<li>修改了文件但未 git add（未暂存）→ 恢复到 HEAD版本。</li>
-<li>修改了文件且已 git add（已暂存）→ 恢复到暂存区版本。</li>
-<li>误删了文件 → 恢复文件到版本库中的状态。</li>
-<li></li>
-</ul>
-<p>假如你想丢弃你在本地的所有改动与提交，可以到服务器上获取最新的版本历史，并将你本地主分支指向它：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 从远程仓库（origin）下载最新的提交记录和分支信息，但​​不会自动合并或修改本地代码​​。</span><br>git fetch origin<br><span class="hljs-comment"># 强制将当前分支重置到 origin/master的提交。</span><br><span class="hljs-comment"># --hard：彻底重置工作区和暂存区，匹配远程分支。</span><br>git reset --hard origin/master<br></code></pre></td></tr></table></figure>
-
-<h2 id="本地仓库git初始化"><a href="#本地仓库git初始化" class="headerlink" title="本地仓库git初始化"></a>本地仓库git初始化</h2><h3 id="使用ssh登陆"><a href="#使用ssh登陆" class="headerlink" title="使用ssh登陆"></a>使用ssh登陆</h3><ol>
-<li>先生成ssh密钥（如果没有的话）：</li>
+                <h2 id="数据库储存原理"><a href="#数据库储存原理" class="headerlink" title="数据库储存原理"></a>数据库储存原理</h2><p>如今储存设备可以大致分为<strong>易失性设备</strong>和<strong>非易失性设备</strong>：</p>
+<ol>
+<li>易失性设备(Volatile Devices)​​:</li>
 </ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh-keygen -t rsa -b 4096 -C <span class="hljs-string">&quot;your_email@example.com&quot;</span><br><br><span class="hljs-built_in">cat</span> ~/.ssh/id_rsa.pub<br></code></pre></td></tr></table></figure>
 <ul>
-<li>私钥：~&#x2F;.ssh&#x2F;id_rsa（​​切勿泄露​​）</li>
-<li>公钥：~&#x2F;.ssh&#x2F;id_rsa.pub（需上传到 Git 服务商）</li>
+<li>断电后数据丢失</li>
+<li>支持快速随机访问，字节寻址</li>
+<li>在本课程中统称为”内存”</li>
 </ul>
 <ol start="2">
-<li>将公钥添加到远程仓库</li>
-<li>测试ssh连接</li>
+<li>非易失性设备(Non-Volatile Devices)​​:</li>
 </ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh -T git@github.com  <span class="hljs-comment"># GitHub</span><br>ssh -T git@gitlab.com  <span class="hljs-comment"># GitLab</span><br></code></pre></td></tr></table></figure>
-<p>连接成功返回：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">Hi TARScn! You<span class="hljs-string">&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>断电后数据保留</li>
+<li>块&#x2F;页寻址(通常4KB)</li>
+<li>更适合顺序访问</li>
+<li>在本课程中统称为”磁盘”(包括SSD和HDD)</li>
+</ul>
+<p>本课程实现的Bustub数据库是<strong>磁盘导向的DBMS</strong>：</p>
+<ul>
+<li>数据库全部存储在磁盘上</li>
+<li>数据组织为页(page)</li>
+<li>通过缓冲池(buffer pool)管理数据在磁盘和内存间的移动</li>
+<li>执行引擎通过缓冲池获取特定页进行操作</li>
+</ul>
+<p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/interactionProcessesDBMS.png" srcset="/img/loading.gif" lazyload alt="关键交互流程（DBMS视角）"></p>
+<h3 id="日志结构存储"><a href="#日志结构存储" class="headerlink" title="日志结构存储"></a>日志结构存储</h3><p>日志结构合并树(Log-Structured Merge-Tree,<strong>LSM-Tree</strong>)是一种高性能的磁盘存储数据结构，专门为​​写入密集型​​工作负载设计，广泛应用于现代数据库系统如LevelDB、RocksDB、Cassandra等。<br>它的设计理念是<strong>将随机写入转化为顺序写入</strong>，以提高写入性能。因为在传统的磁盘存储中，顺序写入的速度要比随机写入快得多。</p>
+<h4 id="结构组成"><a href="#结构组成" class="headerlink" title="结构组成"></a>结构组成</h4><ul>
+<li><strong>MemTable（内存表）</strong>：这是 LSM - Tree 存储结构的最上层。新的数据首先会被写入到 MemTable 中。MemTable 通常是一个基于内存的有序数据结构，比如红黑树或者跳表。</li>
+<li><strong>SSTables（Sorted String Tables）</strong>：当 MemTable 达到一定的大小后，其数据会被刷新（flush）到磁盘上的 SSTables。SSTables 是存储在磁盘中的有序键值对集合，其内部的数据是按照键（key）进行排序的。SSTables 并不是单个的大文件，而是一系列的文件，每个文件都有自己的范围（key 的区间）。例如，在一个存储用户信息的数据库中，可能会有一个 SSTable 负责存储姓名以 A - F 开头的用户信息，另一个 SSTable 存储姓名以 G - L 开头的用户信息等。</li>
+</ul>
+<p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LogStructuredStorage.png" srcset="/img/loading.gif" lazyload alt="日志结构存储"></p>
+<h4 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h4><ul>
+<li>不直接存储元组，而是存储变更日志记录</li>
+<li>先在内存数据结构(MemTable)中应用变更</li>
+<li>然后顺序写入磁盘(SSTable)</li>
+<li>记录包含：元组唯一ID、操作类型(PUT&#x2F;DELETE)、元组内容(对于PUT)</li>
+</ul>
+<h3 id="索引组织存储"><a href="#索引组织存储" class="headerlink" title="索引组织存储"></a>索引组织存储</h3><p>索引组织存储(IOS, Index-Organized Storage)是一种将​<strong>​表数据直接存储在索引结构​</strong>​中的数据库存储方式，与传统堆文件(Heap File)存储形成鲜明对比。常用索引结构为<strong>B+树</strong>。</p>
+<p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/IOS.png" srcset="/img/loading.gif" lazyload alt="与传统堆文件对比"></p>
+<h2 id="Bustub的缓存池结构"><a href="#Bustub的缓存池结构" class="headerlink" title="Bustub的缓存池结构"></a>Bustub的缓存池结构</h2><p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/bpm.png" srcset="/img/loading.gif" lazyload alt="缓冲池管理"></p>
+<ul>
+<li><strong>page对象</strong>：内存中的页表示，包含脏位标记</li>
+<li><strong>​​LRU-K替换器</strong>：改进的LRU算法，考虑最近K次访问历史，用于刷新不常用的内存页</li>
+</ul>
+<h2 id="Project-1"><a href="#Project-1" class="headerlink" title="Project #1"></a>Project #1</h2><p>实验一是要实现一个缓存池管理器，主要包括三个程序，分别是：</p>
+<ul>
+<li>LRU-K更新策略</li>
+<li>磁盘管理</li>
+<li>缓存池管理</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://15445.courses.cs.cmu.edu/fall2024/project1/">要完成的任务详情</a></p>
 
                 
               </div>
@@ -363,7 +357,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/git/" class="category-chain-item">git</a>
+  <a href="/categories/CMU15-445/" class="category-chain-item">CMU15-445</a>
   
   
 
@@ -378,7 +372,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/git/" class="print-no-link">#git</a>
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="print-no-link">#数据库</a>
+      
+        <a href="/tags/Bustub/" class="print-no-link">#Bustub</a>
       
     </div>
   
@@ -392,18 +388,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/09/04/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/" title="CMU15-445(Bustub):project1实现笔记">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">CMU15-445(Bustub):project1实现笔记</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/07/10/%E4%BA%8C%E5%8F%89%E6%A0%91%E6%9E%84%E9%80%A0%E5%92%8C%E9%81%8D%E5%8E%86%E7%A8%8B%E5%BA%8F/" title="二叉树构造和遍历程序">
-                        <span class="hidden-mobile">二叉树构造和遍历程序</span>
+                      <a href="/2025/08/07/git%E4%BD%BF%E7%94%A8/" title="git使用">
+                        <span class="hidden-mobile">git使用</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

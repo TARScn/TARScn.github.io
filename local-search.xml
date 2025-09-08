@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>CMU15-445(Bustub):project1实现笔记</title>
+    <link href="/2025/09/04/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/"/>
+    <url>/2025/09/04/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/</url>
+    
+    <content type="html"><![CDATA[<h2 id="数据库储存原理"><a href="#数据库储存原理" class="headerlink" title="数据库储存原理"></a>数据库储存原理</h2><p>如今储存设备可以大致分为<strong>易失性设备</strong>和<strong>非易失性设备</strong>：</p><ol><li>易失性设备(Volatile Devices)​​:</li></ol><ul><li>断电后数据丢失</li><li>支持快速随机访问，字节寻址</li><li>在本课程中统称为”内存”</li></ul><ol start="2"><li>非易失性设备(Non-Volatile Devices)​​:</li></ol><ul><li>断电后数据保留</li><li>块&#x2F;页寻址(通常4KB)</li><li>更适合顺序访问</li><li>在本课程中统称为”磁盘”(包括SSD和HDD)</li></ul><p>本课程实现的Bustub数据库是<strong>磁盘导向的DBMS</strong>：</p><ul><li>数据库全部存储在磁盘上</li><li>数据组织为页(page)</li><li>通过缓冲池(buffer pool)管理数据在磁盘和内存间的移动</li><li>执行引擎通过缓冲池获取特定页进行操作</li></ul><p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/interactionProcessesDBMS.png" alt="关键交互流程（DBMS视角）"></p><h3 id="日志结构存储"><a href="#日志结构存储" class="headerlink" title="日志结构存储"></a>日志结构存储</h3><p>日志结构合并树(Log-Structured Merge-Tree,<strong>LSM-Tree</strong>)是一种高性能的磁盘存储数据结构，专门为​​写入密集型​​工作负载设计，广泛应用于现代数据库系统如LevelDB、RocksDB、Cassandra等。<br>它的设计理念是<strong>将随机写入转化为顺序写入</strong>，以提高写入性能。因为在传统的磁盘存储中，顺序写入的速度要比随机写入快得多。</p><h4 id="结构组成"><a href="#结构组成" class="headerlink" title="结构组成"></a>结构组成</h4><ul><li><strong>MemTable（内存表）</strong>：这是 LSM - Tree 存储结构的最上层。新的数据首先会被写入到 MemTable 中。MemTable 通常是一个基于内存的有序数据结构，比如红黑树或者跳表。</li><li><strong>SSTables（Sorted String Tables）</strong>：当 MemTable 达到一定的大小后，其数据会被刷新（flush）到磁盘上的 SSTables。SSTables 是存储在磁盘中的有序键值对集合，其内部的数据是按照键（key）进行排序的。SSTables 并不是单个的大文件，而是一系列的文件，每个文件都有自己的范围（key 的区间）。例如，在一个存储用户信息的数据库中，可能会有一个 SSTable 负责存储姓名以 A - F 开头的用户信息，另一个 SSTable 存储姓名以 G - L 开头的用户信息等。</li></ul><p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LogStructuredStorage.png" alt="日志结构存储"></p><h4 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h4><ul><li>不直接存储元组，而是存储变更日志记录</li><li>先在内存数据结构(MemTable)中应用变更</li><li>然后顺序写入磁盘(SSTable)</li><li>记录包含：元组唯一ID、操作类型(PUT&#x2F;DELETE)、元组内容(对于PUT)</li></ul><h3 id="索引组织存储"><a href="#索引组织存储" class="headerlink" title="索引组织存储"></a>索引组织存储</h3><p>索引组织存储(IOS, Index-Organized Storage)是一种将​<strong>​表数据直接存储在索引结构​</strong>​中的数据库存储方式，与传统堆文件(Heap File)存储形成鲜明对比。常用索引结构为<strong>B+树</strong>。</p><p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/IOS.png" alt="与传统堆文件对比"></p><h2 id="Bustub的缓存池结构"><a href="#Bustub的缓存池结构" class="headerlink" title="Bustub的缓存池结构"></a>Bustub的缓存池结构</h2><p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/bpm.png" alt="缓冲池管理"></p><ul><li><strong>page对象</strong>：内存中的页表示，包含脏位标记</li><li><strong>​​LRU-K替换器</strong>：改进的LRU算法，考虑最近K次访问历史，用于刷新不常用的内存页</li></ul><h2 id="Project-1"><a href="#Project-1" class="headerlink" title="Project #1"></a>Project #1</h2><p>实验一是要实现一个缓存池管理器，主要包括三个程序，分别是：</p><ul><li>LRU-K更新策略</li><li>磁盘管理</li><li>缓存池管理</li></ul><p><a href="https://15445.courses.cs.cmu.edu/fall2024/project1/">要完成的任务详情</a></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>CMU15-445</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>数据库</tag>
+      
+      <tag>Bustub</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>git使用</title>
     <link href="/2025/08/07/git%E4%BD%BF%E7%94%A8/"/>
     <url>/2025/08/07/git%E4%BD%BF%E7%94%A8/</url>
