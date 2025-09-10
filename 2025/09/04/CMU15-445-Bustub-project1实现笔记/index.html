@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRUEvict.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRUUse.png">
 <meta property="article:published_time" content="2025-09-04T01:32:56.000Z">
-<meta property="article:modified_time" content="2025-09-10T02:49:26.063Z">
+<meta property="article:modified_time" content="2025-09-10T02:54:07.917Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="数据库">
 <meta property="article:tag" content="Bustub">
@@ -346,10 +346,14 @@
 <h3 id="Task-1-LRU-K-Replacement-Policy"><a href="#Task-1-LRU-K-Replacement-Policy" class="headerlink" title="Task #1 - LRU-K Replacement Policy"></a>Task #1 - LRU-K Replacement Policy</h3><p><strong>​LRU-K​​</strong>（Least Recently Used-K）是传统LRU算法的改进版本，通过记录最近K次访问的历史信息，更准确地判断数据的”冷热”程度，从而减少缓冲池的”缓存污染”问题。</p>
 <p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRU_K.png" srcset="/img/loading.gif" lazyload alt="LRU-K算法"></p>
 <ul>
-<li><p><strong>以下为LRU—K算法的工作流程</strong><br><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRURecordAccess.png" srcset="/img/loading.gif" lazyload alt="记录访问"><br><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRUEvict.png" srcset="/img/loading.gif" lazyload alt="淘汰界面"></p>
-</li>
-<li><p><strong>LRUKNode和LRUKReplacer</strong></p>
-</li>
+<li><strong>以下为LRU—K算法的工作流程</strong></li>
+</ul>
+<p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRURecordAccess.png" srcset="/img/loading.gif" lazyload alt="记录访问"></p>
+<!-- ![淘汰界面](/img/CMU15-445-Bustub-project1实现笔记/LRUEvict.png) -->
+<img src="/img/CMU15-445-Bustub-project1实现笔记/LRUEvict.png" srcset="/img/loading.gif" lazyload alt="淘汰界面" width="50%" height="50%">
+
+<ul>
+<li><strong>LRUKNode和LRUKReplacer</strong></li>
 </ul>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">class</span> <span class="hljs-title class_">LRUKNode</span> &#123;<br><br> <span class="hljs-keyword">public</span>:<br>  <span class="hljs-comment">/** History of last seen K timestamps of this page. Least recent timestamp stored in front. */</span><br>  <span class="hljs-comment">// Remove maybe_unused if you start using them. Feel free to change the member variables as you want.</span><br><br>  [[maybe_unused]] std::list&lt;<span class="hljs-type">size_t</span>&gt; history_;<br>  [[maybe_unused]] <span class="hljs-type">size_t</span> k_;<br>  [[maybe_unused]] <span class="hljs-type">frame_id_t</span> fid_;<br>  [[maybe_unused]] <span class="hljs-type">bool</span> is_evictable_&#123;<span class="hljs-literal">false</span>&#125;;<br>&#125;;<br></code></pre></td></tr></table></figure>
 <p>LRUKNode 负责​​跟踪单个帧的访问历史​​，是LRU-K算法的基本数据单元。</p>
