@@ -41,7 +41,7 @@
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/bpm1.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/bpm2.png">
 <meta property="article:published_time" content="2025-09-04T01:32:56.000Z">
-<meta property="article:modified_time" content="2025-09-10T12:36:35.436Z">
+<meta property="article:modified_time" content="2025-09-10T12:42:42.696Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="数据库">
 <meta property="article:tag" content="Bustub">
@@ -356,18 +356,14 @@
 <h3 id="Task-1-LRU-K-Replacement-Policy"><a href="#Task-1-LRU-K-Replacement-Policy" class="headerlink" title="Task #1 - LRU-K Replacement Policy"></a>Task #1 - LRU-K Replacement Policy</h3><p><strong>​LRU-K​​</strong>（Least Recently Used-K）是传统LRU算法的改进版本，通过记录最近K次访问的历史信息，更准确地判断数据的”冷热”程度，从而减少缓冲池的”缓存污染”问题。</p>
 <img src="/img/CMU15-445-Bustub-project1实现笔记/LRU_K.png" srcset="/img/loading.gif" lazyload alt="LRU-K算法" style="display: block; margin: 0 auto; width: 50%; height:50%;">
 
-<ol>
-<li><strong>以下为LRU—K算法的工作流程</strong></li>
-</ol>
+<p><strong>1) 以下为LRU—K算法的工作流程</strong></p>
 <p>记录各个frame的访问次数</p>
 <img src="/img/CMU15-445-Bustub-project1实现笔记/LRURecordAccess.png" srcset="/img/loading.gif" lazyload alt="记录访问" style="display: block; margin: 0 auto; width: 70%; height:70%;">
 
 <p>驱逐访问距离大于等于K的一个frame</p>
 <img src="/img/CMU15-445-Bustub-project1实现笔记/LRUEvict.png" srcset="/img/loading.gif" lazyload alt="淘汰界面" style="display: block; margin: 0 auto; width: 50%; height:50%;">
 
-<ol start="2">
-<li><strong>LRUKNode和LRUKReplacer</strong></li>
-</ol>
+<p><strong>2) LRUKNode和LRUKReplacer</strong></p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">class</span> <span class="hljs-title class_">LRUKNode</span> &#123;<br><br> <span class="hljs-keyword">public</span>:<br>  <span class="hljs-comment">/** History of last seen K timestamps of this page. Least recent timestamp stored in front. */</span><br>  <span class="hljs-comment">// Remove maybe_unused if you start using them. Feel free to change the member variables as you want.</span><br><br>  [[maybe_unused]] std::list&lt;<span class="hljs-type">size_t</span>&gt; history_;<br>  [[maybe_unused]] <span class="hljs-type">size_t</span> k_;<br>  [[maybe_unused]] <span class="hljs-type">frame_id_t</span> fid_;<br>  [[maybe_unused]] <span class="hljs-type">bool</span> is_evictable_&#123;<span class="hljs-literal">false</span>&#125;;<br>&#125;;<br></code></pre></td></tr></table></figure>
 <p><strong>LRUKNode</strong>负责​​跟踪单个帧的访问历史​​，是LRU-K算法的基本数据单元。</p>
 <table>
@@ -402,32 +398,24 @@
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * LRUKReplacer implements the LRU-k replacement policy.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * The LRU-k algorithm evicts a frame whose backward k-distance is maximum</span><br><span class="hljs-comment"> * of all frames. Backward k-distance is computed as the difference in time between</span><br><span class="hljs-comment"> * current timestamp and the timestamp of kth previous access.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * A frame with less than k historical references is given</span><br><span class="hljs-comment"> * +inf as its backward k-distance. When multiple frames have +inf backward k-distance,</span><br><span class="hljs-comment"> * classical LRU algorithm is used to choose victim.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">LRUKReplacer</span> &#123;<br> <span class="hljs-keyword">public</span>:<br>  <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">LRUKReplacer</span><span class="hljs-params">(<span class="hljs-type">size_t</span> num_frames, <span class="hljs-type">size_t</span> k)</span></span>;<br><br>  <span class="hljs-built_in">DISALLOW_COPY_AND_MOVE</span>(LRUKReplacer);<br><br>  <span class="hljs-comment">/**</span><br><span class="hljs-comment">   * TODO(P1): Add implementation</span><br><span class="hljs-comment">   *</span><br><span class="hljs-comment">   * @brief Destroys the LRUReplacer.</span><br><span class="hljs-comment">   */</span><br>  ~<span class="hljs-built_in">LRUKReplacer</span>() = <span class="hljs-keyword">default</span>;<br><br>  <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">Evict</span><span class="hljs-params">()</span> -&gt; std::optional&lt;<span class="hljs-type">frame_id_t</span>&gt;</span>;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">RecordAccess</span><span class="hljs-params">(<span class="hljs-type">frame_id_t</span> frame_id, AccessType access_type = AccessType::Unknown)</span></span>;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">SetEvictable</span><span class="hljs-params">(<span class="hljs-type">frame_id_t</span> frame_id, <span class="hljs-type">bool</span> set_evictable)</span></span>;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Remove</span><span class="hljs-params">(<span class="hljs-type">frame_id_t</span> frame_id)</span></span>;<br><br>  <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">Size</span><span class="hljs-params">()</span> -&gt; <span class="hljs-type">size_t</span></span>;<br><br> <span class="hljs-keyword">private</span>:<br>  <span class="hljs-comment">// TODO(student): implement me! You can replace these member variables as you like.</span><br>  <span class="hljs-comment">// Remove maybe_unused if you start using them.</span><br>  [[maybe_unused]] std::unordered_map&lt;<span class="hljs-type">frame_id_t</span>, LRUKNode&gt; node_store_;<br>  [[maybe_unused]] <span class="hljs-type">size_t</span> current_timestamp_&#123;<span class="hljs-number">0</span>&#125;;<br>  [[maybe_unused]] <span class="hljs-type">size_t</span> curr_size_&#123;<span class="hljs-number">0</span>&#125;;<br>  [[maybe_unused]] <span class="hljs-type">size_t</span> replacer_size_;<br>  [[maybe_unused]] <span class="hljs-type">size_t</span> k_;<br>  [[maybe_unused]] std::mutex latch_;<br>&#125;;<br></code></pre></td></tr></table></figure>
 <p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRUUse.png" srcset="/img/loading.gif" lazyload alt="LRUKReplacer组件的作用"></p>
 <h3 id="Task-2-Disk-Scheduler"><a href="#Task-2-Disk-Scheduler" class="headerlink" title="Task #2 - Disk Scheduler"></a>Task #2 - Disk Scheduler</h3><p>该组件负责对DiskManager进行读写操作调度。磁盘调度器可以被其他组件（在本例中为任务#3中的BufferPoolManager）使用，以对磁盘请求进行排队，这些请求由一个DiskRequest结构体表示。磁盘调度器将维护一个后台工作线程，该线程负责处理已调度的请求。</p>
-<ol>
-<li><strong>整体架构</strong><br><strong>Disk Scheduler采用了生产者-消费者模型：</strong></li>
-</ol>
+<p><strong>1) 整体架构</strong><br><strong>Disk Scheduler采用了生产者-消费者模型：</strong></p>
 <ul>
 <li><strong>​​生产者​</strong>​：数据库系统中的其他组件（如 Buffer Pool Manager）通过Schedule()方法提交磁盘 I&#x2F;O 请求</li>
 <li><strong>消费者​​</strong>：后台工作线程从队列中取出请求并执行实际的磁盘操作</li>
 </ul>
-<ol start="2">
-<li><strong>核心组件</strong></li>
-</ol>
+<p><strong>2) 核心组件</strong></p>
 <ul>
 <li>请求队列 (request_queue_):是线程安全的阻塞队列，用于在生产者和消费者之间传递请求</li>
 <li>后台工作线程 (background_thread_):在构造函数中启动，运行StartWorkerThread()方法,持续从队列中取出请求并处理，直到收到终止信号。</li>
 <li>磁盘管理器 (disk_manager_):实际执行磁盘 I&#x2F;O 操作的核心组件,供 ReadPage()和 WritePage()方法。</li>
 </ul>
-<ol start="3">
-<li><strong>工作流程</strong></li>
-</ol>
+<p><strong>3) 工作流程</strong></p>
 <img src="/img/CMU15-445-Bustub-project1实现笔记/DiskSch.png" srcset="/img/loading.gif" lazyload alt="Disk Scheduler的工作流程" style="display: block; margin: 0 auto; width: 50%; height:50%;">
 
 <h3 id="Task-3-Buffer-Pool-Manager"><a href="#Task-3-Buffer-Pool-Manager" class="headerlink" title="Task #3 - Buffer Pool Manager"></a>Task #3 - Buffer Pool Manager</h3><p>最后实现缓冲池管理器（ BufferPoolManager ）。BufferPoolManager 负责使用 DiskScheduler 从磁盘获取数据库页面，并将它们存储在内存中。 BufferPoolManager还可以在收到明确指示或需要驱逐页面以腾出空间时，调度脏页面的写入到磁盘。</p>
 <p>LRUKReplacer 将跟踪页面访问时间，以便在需要为新页面腾出空间时决定要驱逐哪个帧。DiskScheduler 将在 DiskManager 上调度对磁盘的写入和读取。</p>
 <p>同时，还要实现 ReadPageGuard 和 WritePageGuard 。这些类是 RAII 对象，提供对底层页面的线程安全读写访问。​<strong>RAII（Resource Acquisition Is Initialization）​​</strong>的核心思想是：将资源（内存、文件句柄、锁、数据库连接等）的生命周期与一个对象的生命周期绑定。​​​​获取资源​​：在​​对象的构造函数​​中获取资源；​​释放资源​​：在​​对象的析构函数​​中释放资源。</p>
-<ol>
-<li><strong>page_guard</strong></li>
-</ol>
+<p><strong>1) page_guard</strong></p>
 <p>PageGuard 是 BusTub 数据库系统中基于 ​​RAII（Resource Acquisition Is Initialization）​​ 思想设计的智能指针，用于安全地管理缓冲池页面的访问。其核心目标是：</p>
 <img src="/img/CMU15-445-Bustub-project1实现笔记/page_guard1.png" srcset="/img/loading.gif" lazyload alt="page_guard的RAII设计" style="display: block; margin: 0 auto; width: 50%; height:50%;">
 
@@ -437,9 +425,7 @@
 <p>除了完成资源自动分配，最重要的是page_guard的线程安全。</p>
 <img src="/img/CMU15-445-Bustub-project1实现笔记/page_guard3.png" srcset="/img/loading.gif" lazyload alt="线程安全保证" style="display: block; margin: 0 auto; width: 50%; height:50%;">
 
-<ol start="2">
-<li><strong>buffer_pool_manager</strong></li>
-</ol>
+<p><strong>2) buffer_pool_manager</strong></p>
 <p>BufferPoolManager实现展示了数据库系统核心组件的典型设计方法，其分层设计、资源管理策略和并发控制机制尤其值得学习，是构建高性能存储系统的优秀范例。</p>
 <img src="/img/CMU15-445-Bustub-project1实现笔记/bpm1.png" srcset="/img/loading.gif" lazyload alt="页面获取流程" style="display: block; margin: 0 auto; width: 70%; height:70%;">
 
