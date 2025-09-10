@@ -30,8 +30,12 @@
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LogStructuredStorage.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/IOS.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/bpm.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRU_K.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRURecordAccess.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRUEvict.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRUUse.png">
 <meta property="article:published_time" content="2025-09-04T01:32:56.000Z">
-<meta property="article:modified_time" content="2025-09-08T07:43:45.403Z">
+<meta property="article:modified_time" content="2025-09-10T02:49:26.063Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="数据库">
 <meta property="article:tag" content="Bustub">
@@ -234,7 +238,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          739 字
+          1k 字
         
       </span>
     
@@ -245,7 +249,7 @@
         
         
         
-          7 分钟
+          9 分钟
         
       </span>
     
@@ -339,6 +343,47 @@
 <li>缓存池管理</li>
 </ul>
 <p><a target="_blank" rel="noopener" href="https://15445.courses.cs.cmu.edu/fall2024/project1/">要完成的任务详情</a></p>
+<h3 id="Task-1-LRU-K-Replacement-Policy"><a href="#Task-1-LRU-K-Replacement-Policy" class="headerlink" title="Task #1 - LRU-K Replacement Policy"></a>Task #1 - LRU-K Replacement Policy</h3><p><strong>​LRU-K​​</strong>（Least Recently Used-K）是传统LRU算法的改进版本，通过记录最近K次访问的历史信息，更准确地判断数据的”冷热”程度，从而减少缓冲池的”缓存污染”问题。</p>
+<p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRU_K.png" srcset="/img/loading.gif" lazyload alt="LRU-K算法"></p>
+<ul>
+<li><p><strong>以下为LRU—K算法的工作流程</strong><br><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRURecordAccess.png" srcset="/img/loading.gif" lazyload alt="记录访问"><br><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRUEvict.png" srcset="/img/loading.gif" lazyload alt="淘汰界面"></p>
+</li>
+<li><p><strong>LRUKNode和LRUKReplacer</strong></p>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">class</span> <span class="hljs-title class_">LRUKNode</span> &#123;<br><br> <span class="hljs-keyword">public</span>:<br>  <span class="hljs-comment">/** History of last seen K timestamps of this page. Least recent timestamp stored in front. */</span><br>  <span class="hljs-comment">// Remove maybe_unused if you start using them. Feel free to change the member variables as you want.</span><br><br>  [[maybe_unused]] std::list&lt;<span class="hljs-type">size_t</span>&gt; history_;<br>  [[maybe_unused]] <span class="hljs-type">size_t</span> k_;<br>  [[maybe_unused]] <span class="hljs-type">frame_id_t</span> fid_;<br>  [[maybe_unused]] <span class="hljs-type">bool</span> is_evictable_&#123;<span class="hljs-literal">false</span>&#125;;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>LRUKNode 负责​​跟踪单个帧的访问历史​​，是LRU-K算法的基本数据单元。</p>
+<table>
+<thead>
+<tr>
+<th align="left">变量名</th>
+<th align="center">类型</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">history_</td>
+<td align="center">std::list<size_t></td>
+<td align="center">按时间顺序存储最近K次访问的时间戳，最早的时间戳在列表前端</td>
+</tr>
+<tr>
+<td align="left">k_</td>
+<td align="center">size_t</td>
+<td align="center">记录该节点使用的K值（历史访问次数阈值）</td>
+</tr>
+<tr>
+<td align="left">fid_</td>
+<td align="center">frame_id_t</td>
+<td align="center">该节点对应的缓冲池帧ID</td>
+</tr>
+<tr>
+<td align="left">is_evictable_</td>
+<td align="center">bool</td>
+<td align="center">标记该帧是否可被淘汰，初始为false</td>
+</tr>
+</tbody></table>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * LRUKReplacer implements the LRU-k replacement policy.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * The LRU-k algorithm evicts a frame whose backward k-distance is maximum</span><br><span class="hljs-comment"> * of all frames. Backward k-distance is computed as the difference in time between</span><br><span class="hljs-comment"> * current timestamp and the timestamp of kth previous access.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * A frame with less than k historical references is given</span><br><span class="hljs-comment"> * +inf as its backward k-distance. When multiple frames have +inf backward k-distance,</span><br><span class="hljs-comment"> * classical LRU algorithm is used to choose victim.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">LRUKReplacer</span> &#123;<br> <span class="hljs-keyword">public</span>:<br>  <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">LRUKReplacer</span><span class="hljs-params">(<span class="hljs-type">size_t</span> num_frames, <span class="hljs-type">size_t</span> k)</span></span>;<br><br>  <span class="hljs-built_in">DISALLOW_COPY_AND_MOVE</span>(LRUKReplacer);<br><br>  <span class="hljs-comment">/**</span><br><span class="hljs-comment">   * TODO(P1): Add implementation</span><br><span class="hljs-comment">   *</span><br><span class="hljs-comment">   * @brief Destroys the LRUReplacer.</span><br><span class="hljs-comment">   */</span><br>  ~<span class="hljs-built_in">LRUKReplacer</span>() = <span class="hljs-keyword">default</span>;<br><br>  <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">Evict</span><span class="hljs-params">()</span> -&gt; std::optional&lt;<span class="hljs-type">frame_id_t</span>&gt;</span>;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">RecordAccess</span><span class="hljs-params">(<span class="hljs-type">frame_id_t</span> frame_id, AccessType access_type = AccessType::Unknown)</span></span>;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">SetEvictable</span><span class="hljs-params">(<span class="hljs-type">frame_id_t</span> frame_id, <span class="hljs-type">bool</span> set_evictable)</span></span>;<br><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">Remove</span><span class="hljs-params">(<span class="hljs-type">frame_id_t</span> frame_id)</span></span>;<br><br>  <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">Size</span><span class="hljs-params">()</span> -&gt; <span class="hljs-type">size_t</span></span>;<br><br> <span class="hljs-keyword">private</span>:<br>  <span class="hljs-comment">// TODO(student): implement me! You can replace these member variables as you like.</span><br>  <span class="hljs-comment">// Remove maybe_unused if you start using them.</span><br>  [[maybe_unused]] std::unordered_map&lt;<span class="hljs-type">frame_id_t</span>, LRUKNode&gt; node_store_;<br>  [[maybe_unused]] <span class="hljs-type">size_t</span> current_timestamp_&#123;<span class="hljs-number">0</span>&#125;;<br>  [[maybe_unused]] <span class="hljs-type">size_t</span> curr_size_&#123;<span class="hljs-number">0</span>&#125;;<br>  [[maybe_unused]] <span class="hljs-type">size_t</span> replacer_size_;<br>  [[maybe_unused]] <span class="hljs-type">size_t</span> k_;<br>  [[maybe_unused]] std::mutex latch_;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p><img src="/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/LRUUse.png" srcset="/img/loading.gif" lazyload alt="LRUKReplacer组件的作用"></p>
 
                 
               </div>
