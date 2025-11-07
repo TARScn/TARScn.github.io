@@ -30,7 +30,7 @@
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/skipList.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/fst.png">
 <meta property="article:published_time" content="2025-11-07T03:16:22.000Z">
-<meta property="article:modified_time" content="2025-11-07T07:27:39.871Z">
+<meta property="article:modified_time" content="2025-11-07T09:06:50.526Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="数据库">
 <meta property="article:tag" content="Bustub">
@@ -233,7 +233,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          2.3k 字
         
       </span>
     
@@ -244,7 +244,7 @@
         
         
         
-          11 分钟
+          19 分钟
         
       </span>
     
@@ -303,7 +303,7 @@
 </ul>
 </li>
 </ul>
-<img src="/img/CMU15-445-Bustub-project-课程学习笔记1/bloomFilter.png" srcset="/img/loading.gif" lazyload alt="布隆过滤器" style="display: block; margin: 0 auto; width: 70%; height:70%;">
+<img src="/img/CMU15-445-Bustub-project-课程学习笔记1/bloomFilter.png" srcset="/img/loading.gif" lazyload alt="布隆过滤器" style="display: block; margin: 0 auto; width: 50%; height:50%;">
 
 <h3 id="跳表"><a href="#跳表" class="headerlink" title="跳表"></a>跳表</h3><p>跳表是一种多层级有序链表，用于内存数据（如MemTable），支持快速查找、插入和删除，无需重新平衡。</p>
 <ul>
@@ -322,7 +322,7 @@
 </ul>
 </li>
 </ul>
-<img src="/img/CMU15-445-Bustub-project-课程学习笔记1/skipList.png" srcset="/img/loading.gif" lazyload alt="跳表" style="display: block; margin: 0 auto; width: 100%; height:100%;">
+<img src="/img/CMU15-445-Bustub-project-课程学习笔记1/skipList.png" srcset="/img/loading.gif" lazyload alt="跳表" style="display: block; margin: 0 auto; width: 50%; height:50%;">
 
 <h3 id="字典树"><a href="#字典树" class="headerlink" title="字典树"></a>字典树</h3><p>字典树是一种有序数据结构，将键按位（如字符或比特）拆分为前缀树，查询复杂度取决于键长。</p>
 <ul>
@@ -348,7 +348,7 @@
 <li><strong>共享前缀与后缀</strong>：FST能够最大限度地压缩共享相同前缀和后缀的词项，显著减少内存占用。例如，单词 “sport” 和 “sports” 共享前缀 “sport”，FST会合并存储这个公共部分。</li>
 <li><strong>输出值</strong>：FST的每条边（或每个状态转换）不仅可以接受一个输入字符，还可以产生一个输出值（通常是一个权重或<strong>偏移量</strong>）。在倒排索引的应用中，这些输出值最终会累积起来，指向词项对应的倒排列表在文件中的存储位置。</li>
 </ul>
-<img src="/img/CMU15-445-Bustub-project-课程学习笔记1/fst.png" srcset="/img/loading.gif" lazyload alt="倒排索引--FST" style="display: block; margin: 0 auto; width: 100%; height:100%;">
+<img src="/img/CMU15-445-Bustub-project-课程学习笔记1/fst.png" srcset="/img/loading.gif" lazyload alt="倒排索引--FST" style="display: block; margin: 0 auto; width: 50%; height:50%;">
 
 <p>如上图所示，当查询词项 “pav” 时，FST会沿着路径 p -&gt; a -&gt; v进行状态转换。在遍历过程中，路径上各边的输出值（权重）会被累加。这个最终的累加值（例如 3）可能就是 “pav” 这个词项其倒排列表在索引文件中的起始偏移量。</p>
 <h3 id="向量索引"><a href="#向量索引" class="headerlink" title="向量索引"></a>向量索引</h3><p>用于语义相似性搜索（如基于LLM生成的嵌入向量），支持最近邻查询。</p>
@@ -361,13 +361,89 @@
 </li>
 </ul>
 <h2 id="课程第十讲：索引并发控制"><a href="#课程第十讲：索引并发控制" class="headerlink" title="课程第十讲：索引并发控制"></a>课程第十讲：索引并发控制</h2><h3 id="锁（locks）与门闩-latches-的区别"><a href="#锁（locks）与门闩-latches-的区别" class="headerlink" title="锁（locks）与门闩(latches)的区别"></a>锁（locks）与门闩(latches)的区别</h3><ul>
-<li><p>锁(<strong>locks</strong>)：高级逻辑原语，保护数据库逻辑内容（如元组、表），由事务持有较长时间，系统有死锁检测和回滚机制。</p>
+<li><p>锁(<strong>locks</strong>)：高级逻辑原语，保护数据库逻辑内容（如<strong>元组、表</strong>），事务会在其整个持续期间持有锁，系统有死锁检测和回滚机制。</p>
 </li>
-<li><p>门闩(<strong>latches</strong>)：低级保护原语，保护DBMS内部数据结构（如索引节点、内存区域），持有时间极短，由开发者负责避免死锁。门闩有两种模式：</p>
+<li><p>门闩(<strong>latches</strong>)：低级保护原语，保护DBMS内部数据结构（如<strong>数据结构、内存区域</strong>），持有时间极短，由开发者负责避免死锁。门闩有两种模式：</p>
 <ul>
 <li><p>读门闩：允许多个线程同时获取。</p>
 </li>
 <li><p>写门闩：具有排他性，只允许一个线程获取。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="门闩的实现方式"><a href="#门闩的实现方式" class="headerlink" title="门闩的实现方式"></a>门闩的实现方式</h3><table>
+<thead>
+<tr>
+<th align="left">实现方式</th>
+<th align="left">描述</th>
+<th align="left">优点</th>
+<th align="left">缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">测试并设置自旋门闩</td>
+<td align="left">基于CPU原子指令（如CAS，示例：std::atomic），线程在无法获取门闩时循环尝试或让出CPU。</td>
+<td align="left">由DBMS控制，操作高效（单条指令）。</td>
+<td align="left">高并发下不具扩展性，大量CAS指令导致缓存一致性风暴。</td>
+</tr>
+<tr>
+<td align="left">阻塞式OS互斥锁</td>
+<td align="left">直接使用操作系统提供的互斥锁（如std::mutex）。</td>
+<td align="left">简单易用，无需额外编码。</td>
+<td align="left">开销大，不可扩展（约25ns&#x2F;次），受OS调度影响。</td>
+</tr>
+<tr>
+<td align="left">读写者门闩</td>
+<td align="left">在基础门闩上增加逻辑，区分读&#x2F;写模式，管理等待队列（如std::shared_mutex）。</td>
+<td align="left">允许并发读取，适合读多写少场景。</td>
+<td align="left">需管理队列以防饥饿，元数据存储开销大于自旋门闩。</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>std::atomic</strong>:硬件级别的原子性<ul>
+<li>本质：是C++11引入的一个模板类，用于在多线程环境中对数据进行<strong>原子操作</strong>，确保线程安全，避免数据竞争。<strong>这意味着这些操作在一个线程中看起来是瞬间完成的，不会被其他线程的操作打断</strong>。</li>
+<li>工作方式：它直接利用现代CPU的原子指令（如Compare-And-Swap, Fetch-And-Add）。例如，i++这个操作在非原子情况下是“读取-修改-写入”三步，可能被中断。而 atomic_int i; i++；则通过一条原子指令完成。</li>
+<li>优点：速度最快，没有锁的争用和调度开销。</li>
+<li>缺点：只能保护单个变量或非常简单的数据结构。无法保护一个需要多步更新才能保持逻辑一致性的代码块。例如，它无法保证“从链表A中取出一个节点，再放入链表B”这个过程的原子性。</li>
+</ul>
+</li>
+</ul>
+<p>简单示例：计数器</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs C++">std::atomic&lt;<span class="hljs-type">int</span>&gt; counter&#123;<span class="hljs-number">0</span>&#125;;<br><span class="hljs-comment">// 要读取std::atomic变量的值，可以使用load函数</span><br>counter.<span class="hljs-built_in">load</span>();<br><span class="hljs-comment">// 要修改std::atomic变量的值，可以使用store函数</span><br>counter.<span class="hljs-built_in">store</span>(<span class="hljs-number">1</span>);<br><span class="hljs-comment">// 多个线程同时执行是安全的</span><br>counter.<span class="hljs-built_in">fetch_add</span>(<span class="hljs-number">1</span>);<br>counter.<span class="hljs-built_in">fetch_sub</span>(<span class="hljs-number">1</span>);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>std::mutex</strong>：通用的互斥锁</p>
+<ul>
+<li><p>本质：<strong>互斥锁，用于保护临界区——一段需要独占访问的代码</strong>。线程在进入临界区前必须先锁定互斥锁，如果锁已被其他线程持有，则该线程会被阻塞（进入睡眠状态），直到锁被释放。</p>
+</li>
+<li><p>工作方式：当争用发生时，会涉及操作系统的调度，导致线程挂起和唤醒，这带来较大的性能开销。</p>
+</li>
+<li><p>优点：通用性强，可以保护任何复杂的代码段和数据结构。</p>
+</li>
+<li><p>缺点：性能开销大。即使没有实际争用，加锁解锁操作本身也有成本。并且，不区分读写操作，即使是只读操作也需要串行进行，在高并发读场景下效率低下。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>简单示例：保护一个向量</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs C++">std::vector&lt;<span class="hljs-type">int</span>&gt; shared_data;<br>std::mutex mtx;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">safe_push</span><span class="hljs-params">(<span class="hljs-type">int</span> value)</span> </span>&#123;<br>    <span class="hljs-function">std::lock_guard&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(mtx)</span></span>; <span class="hljs-comment">// 锁定，离开作用域自动解锁</span><br>    shared_data.<span class="hljs-built_in">push_back</span>(value);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>std::shared_mutex</strong>（C++17）：读写锁<ul>
+<li><p>本质：是 std::mutex的增强版，引入了两种锁模式：</p>
+<ul>
+<li><p>共享锁：用于读取操作。多个线程可以同时获得共享锁。</p>
+</li>
+<li><p>独占锁：用于写入操作。一旦一个线程获得了独占锁，其他任何线程（无论是读还是写）都无法再获得锁。</p>
+</li>
+</ul>
+</li>
+<li><p>工作方式：当只有读者时，所有读者并行工作。一旦有写者申请锁，它会等待现有的所有读者完成，然后独占访问，并阻塞后续所有的读者和写者，直到写操作完成。</p>
+</li>
+<li><p>优点：在读多写少的场景下，极大地提高了程序的并行性和吞吐量。</p>
+</li>
+<li><p>缺点：实现比 std::mutex复杂，本身有稍大的开销。如果写操作频繁，由于写锁的排他性，性能可能反而不如简单的 std::mutex，因为需要管理更复杂的队列。</p>
 </li>
 </ul>
 </li>
