@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>CMU15-445(Bustub):课程学习笔记1</title>
+    <link href="/2025/11/07/CMU15-445-Bustub-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/"/>
+    <url>/2025/11/07/CMU15-445-Bustub-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/</url>
+    
+    <content type="html"><![CDATA[<h2 id="课程第九讲：索引"><a href="#课程第九讲：索引" class="headerlink" title="课程第九讲：索引"></a>课程第九讲：索引</h2><h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p>布隆过滤器是一种概率型数据结构，<strong>用于快速判断一个元素是否不在某个集合中</strong>，从而避免不必要的查找开销。它<strong>使用一个位图和多个哈希函数</strong>。</p><ul><li><p><strong>工作原理</strong>：插入元素时，通过多个哈希函数计算其位置并将位图中对应位设为1。查询时，若所有哈希函数对应的位均为1，则元素可能存在（可能存在误判）；若有任一位为0，则元素肯定不存在。</p></li><li><p>特点：确保无假阴性，但可能存在假阳性。可通过调整位图大小和哈希函数数量控制误判率。</p></li><li><p>变种：</p><ul><li><p>计数布隆过滤器：支持删除操作。</p></li><li><p>布谷鸟过滤器：基于布谷鸟哈希，存储元素指纹。</p></li><li><p>简洁范围过滤器：不可变，支持范围查询。</p></li></ul></li></ul><img src="/img/CMU15-445-Bustub-project-课程学习笔记1/bloomFilter.png" alt="布隆过滤器" style="display: block; margin: 0 auto; width: 70%; height:70%;"><h3 id="跳表"><a href="#跳表" class="headerlink" title="跳表"></a>跳表</h3><p>跳表是一种多层级有序链表，用于内存数据（如MemTable），支持快速查找、插入和删除，无需重新平衡。</p><ul><li><p>查找：从顶层链表开始遍历，当下一节点值大于目标值时，下降至下一层继续遍历，直至底层。</p></li><li><p>插入：<strong>通过抛硬币决定新节点的层级</strong>，并从底层向上逐层插入，通常通过原子指针交换实现无锁操作。</p></li><li><p>删除：先标记节点为已删除，待后续物理删除；删除顺序为自上而下，以保持结构完整性。</p></li><li><p>优缺点：</p><ul><li><p>优点：内存占用可能低于B+树（无反向指针），无需重新平衡。</p></li><li><p>缺点：对磁盘&#x2F;缓存不友好（局部性差），反向扫描实现复杂。</p></li></ul></li></ul><img src="/img/CMU15-445-Bustub-project-课程学习笔记1/skipList.png" alt="跳表" style="display: block; margin: 0 auto; width: 100%; height:100%;"><h3 id="字典树"><a href="#字典树" class="headerlink" title="字典树"></a>字典树</h3><p>字典树是一种有序数据结构，将键按位（如字符或比特）拆分为前缀树，查询复杂度取决于键长。</p><ul><li><p>压缩技术：</p><ul><li><p>水平压缩：将节点压缩为数组（已知跨度时）。</p></li><li><p>垂直压缩（Radix树）：合并单分支节点，但可能导致假阳性（需验证实际数据）。</p></li></ul></li></ul><h3 id="倒排索引"><a href="#倒排索引" class="headerlink" title="倒排索引"></a>倒排索引</h3><p>专用于<strong>关键词搜索</strong>（如全文检索），建立词项到包含该词项的记录列表（称为<strong>倒排列表</strong>）的映射。</p><ul><li><p>Lucene实现：使用类似字典树的有限状态转换器存储词项字典，通过边权重定位数据位置，并采用增量压缩、位打包等压缩技术。</p></li><li><p>PostgreSQL实现：基于B+树构建词项字典；小倒排列表用有序数组存储，大列表则用额外B+树管理。通过待处理列表积累小批量更新。</p></li></ul><p>来详细探讨倒排索引中的关键组件——有限状态转换器。<br>可以将其理解为一个经过高度优化的、确定性的字典树。与普通字典树不同的是，<strong>FST</strong>在存储和查询效率上做了重大改进：</p><ul><li>确定性：对于任意给定的输入词项，FST总会沿着唯一的一条路径进行转换。</li><li><strong>共享前缀与后缀</strong>：FST能够最大限度地压缩共享相同前缀和后缀的词项，显著减少内存占用。例如，单词 “sport” 和 “sports” 共享前缀 “sport”，FST会合并存储这个公共部分。</li><li><strong>输出值</strong>：FST的每条边（或每个状态转换）不仅可以接受一个输入字符，还可以产生一个输出值（通常是一个权重或<strong>偏移量</strong>）。在倒排索引的应用中，这些输出值最终会累积起来，指向词项对应的倒排列表在文件中的存储位置。</li></ul><img src="/img/CMU15-445-Bustub-project-课程学习笔记1/fst.png" alt="倒排索引--FST" style="display: block; margin: 0 auto; width: 100%; height:100%;"><p>如上图所示，当查询词项 “pav” 时，FST会沿着路径 p -&gt; a -&gt; v进行状态转换。在遍历过程中，路径上各边的输出值（权重）会被累加。这个最终的累加值（例如 3）可能就是 “pav” 这个词项其倒排列表在索引文件中的起始偏移量。</p><h3 id="向量索引"><a href="#向量索引" class="headerlink" title="向量索引"></a>向量索引</h3><p>用于语义相似性搜索（如基于LLM生成的嵌入向量），支持最近邻查询。</p><ul><li><p>倒排文件：通过聚类将向量分组，查询时搜索最近簇（如IVFFlat）。可结合量化技术降维加速。</p></li><li><p>可导航小世界：构建向量近邻图，通过贪婪遍历逼近查询向量（如FAISS、HNSWlib）。</p></li><li><p>挑战：查询结果无绝对正确性，且常需结合过滤条件。</p></li></ul><h2 id="课程第十讲：索引并发控制"><a href="#课程第十讲：索引并发控制" class="headerlink" title="课程第十讲：索引并发控制"></a>课程第十讲：索引并发控制</h2><h3 id="锁（locks）与门闩-latches-的区别"><a href="#锁（locks）与门闩-latches-的区别" class="headerlink" title="锁（locks）与门闩(latches)的区别"></a>锁（locks）与门闩(latches)的区别</h3><ul><li><p>锁(<strong>locks</strong>)：高级逻辑原语，保护数据库逻辑内容（如元组、表），由事务持有较长时间，系统有死锁检测和回滚机制。</p></li><li><p>门闩(<strong>latches</strong>)：低级保护原语，保护DBMS内部数据结构（如索引节点、内存区域），持有时间极短，由开发者负责避免死锁。门闩有两种模式：</p><ul><li><p>读门闩：允许多个线程同时获取。</p></li><li><p>写门闩：具有排他性，只允许一个线程获取。</p></li></ul></li></ul>]]></content>
+    
+    
+    <categories>
+      
+      <category>CMU15-445</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>数据库</tag>
+      
+      <tag>Bustub</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>CMU15-445(Bustub):project1实现笔记</title>
     <link href="/2025/09/04/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/"/>
     <url>/2025/09/04/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/</url>
