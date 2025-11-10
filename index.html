@@ -227,6 +227,69 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
+        <a href="/2025/11/10/Anaconda%E7%9A%84%E4%BD%BF%E7%94%A8/" target="_self">
+          Anaconda的使用
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/11/10/Anaconda%E7%9A%84%E4%BD%BF%E7%94%A8/" target="_self">
+        <div>
+          核心原理Anaconda 的运作主要基于以下两个核心机制：  环境隔离  Anaconda 通过创建独立的虚拟环境来实现隔离。每个环境都拥有自己的 Python 解释器、依赖包以及其各自的安装路径（通常是 anaconda3&#x2F;envs&#x2F;你的环境名称&#x2F;目录）。当你切换环境时，Anaconda 会通过调整系统的 PATH 等环境变量，来确保命令指向的是当前活跃环境中的正确
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-11-10 19:45" pubdate>
+              2025-11-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Anaconda/" class="category-chain-item">Anaconda</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Anaconda/">#Anaconda</a>
+            
+              <a href="/tags/python/">#python</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
         <a href="/2025/11/07/CMU15-445-Bustub-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" target="_self">
           CMU15-445(Bustub):课程学习笔记1
         </a>
@@ -235,7 +298,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2025/11/07/CMU15-445-Bustub-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" target="_self">
         <div>
-          课程第九讲：索引布隆过滤器布隆过滤器是一种概率型数据结构，用于快速判断一个元素是否不在某个集合中，从而避免不必要的查找开销。它使用一个位图和多个哈希函数。  工作原理：插入元素时，通过多个哈希函数计算其位置并将位图中对应位设为1。查询时，若所有哈希函数对应的位均为1，则元素可能存在（可能存在误判）；若有任一位为0，则元素肯定不存在。  特点：确保无假阴性，但可能存在假阳性。可通过调整位图大小和哈希
+          课程第八讲：索引1表索引表索引是表中部分列的副本，这些列经过特殊组织或排序，旨在通过特定属性实现高效数据访问。它是避免全表顺序扫描、提升查询性能的关键技术  作用：DBMS通过索引快速定位目标元组，并确保表数据与索引数据在逻辑上始终同步。  权衡：索引越多，查询可能越快，但会占用更多存储空间，增加维护开销（插入、删除、更新时需同步更新索引），并引入并发控制复杂度。DBMS的查询优化器负责选择最佳索
         </div>
       </a>
 
@@ -277,6 +340,8 @@
               <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">#数据库</a>
             
               <a href="/tags/Bustub/">#Bustub</a>
+            
+              <a href="/tags/B-Tree/">#B+Tree</a>
             
           </div>
         

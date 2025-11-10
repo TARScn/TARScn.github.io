@@ -19,21 +19,22 @@
   <meta name="author" content="Chengxiang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="课程第九讲：索引布隆过滤器布隆过滤器是一种概率型数据结构，用于快速判断一个元素是否不在某个集合中，从而避免不必要的查找开销。它使用一个位图和多个哈希函数。  工作原理：插入元素时，通过多个哈希函数计算其位置并将位图中对应位设为1。查询时，若所有哈希函数对应的位均为1，则元素可能存在（可能存在误判）；若有任一位为0，则元素肯定不存在。  特点：确保无假阴性，但可能存在假阳性。可通过调整位图大小和哈希">
+    <meta name="description" content="课程第八讲：索引1表索引表索引是表中部分列的副本，这些列经过特殊组织或排序，旨在通过特定属性实现高效数据访问。它是避免全表顺序扫描、提升查询性能的关键技术  作用：DBMS通过索引快速定位目标元组，并确保表数据与索引数据在逻辑上始终同步。  权衡：索引越多，查询可能越快，但会占用更多存储空间，增加维护开销（插入、删除、更新时需同步更新索引），并引入并发控制复杂度。DBMS的查询优化器负责选择最佳索">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CMU15-445(Bustub):课程学习笔记1">
 <meta property="og:url" content="http://example.com/2025/11/07/CMU15-445-Bustub-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/index.html">
 <meta property="og:site_name" content="TARScn">
-<meta property="og:description" content="课程第九讲：索引布隆过滤器布隆过滤器是一种概率型数据结构，用于快速判断一个元素是否不在某个集合中，从而避免不必要的查找开销。它使用一个位图和多个哈希函数。  工作原理：插入元素时，通过多个哈希函数计算其位置并将位图中对应位设为1。查询时，若所有哈希函数对应的位均为1，则元素可能存在（可能存在误判）；若有任一位为0，则元素肯定不存在。  特点：确保无假阴性，但可能存在假阳性。可通过调整位图大小和哈希">
+<meta property="og:description" content="课程第八讲：索引1表索引表索引是表中部分列的副本，这些列经过特殊组织或排序，旨在通过特定属性实现高效数据访问。它是避免全表顺序扫描、提升查询性能的关键技术  作用：DBMS通过索引快速定位目标元组，并确保表数据与索引数据在逻辑上始终同步。  权衡：索引越多，查询可能越快，但会占用更多存储空间，增加维护开销（插入、删除、更新时需同步更新索引），并引入并发控制复杂度。DBMS的查询优化器负责选择最佳索">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/bloomFilter.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/skipList.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/fst.png">
 <meta property="article:published_time" content="2025-11-07T03:16:22.000Z">
-<meta property="article:modified_time" content="2025-11-07T09:06:50.526Z">
+<meta property="article:modified_time" content="2025-11-08T02:43:35.159Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="数据库">
 <meta property="article:tag" content="Bustub">
+<meta property="article:tag" content="B+Tree">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/bloomFilter.png">
   
@@ -233,7 +234,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.3k 字
+          3.3k 字
         
       </span>
     
@@ -244,7 +245,7 @@
         
         
         
-          19 分钟
+          28 分钟
         
       </span>
     
@@ -286,7 +287,30 @@
             
               <div class="markdown-body">
                 
-                <h2 id="课程第九讲：索引"><a href="#课程第九讲：索引" class="headerlink" title="课程第九讲：索引"></a>课程第九讲：索引</h2><h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p>布隆过滤器是一种概率型数据结构，<strong>用于快速判断一个元素是否不在某个集合中</strong>，从而避免不必要的查找开销。它<strong>使用一个位图和多个哈希函数</strong>。</p>
+                <h2 id="课程第八讲：索引1"><a href="#课程第八讲：索引1" class="headerlink" title="课程第八讲：索引1"></a>课程第八讲：索引1</h2><h3 id="表索引"><a href="#表索引" class="headerlink" title="表索引"></a>表索引</h3><p>表索引是表中部分列的<strong>副本</strong>，这些列经过特殊组织或排序，旨在通过特定属性实现高效数据访问。它是避免全表顺序扫描、提升查询性能的关键技术</p>
+<ul>
+<li><p>作用：<strong>DBMS通过索引快速定位目标元组，并确保表数据与索引数据在逻辑上始终同步</strong>。</p>
+</li>
+<li><p>权衡：索引越多，查询可能越快，但会占用更多存储空间，增加维护开销（插入、删除、更新时需同步更新索引），并引入并发控制复杂度。DBMS的查询优化器负责选择最佳索引执行查询。</p>
+</li>
+</ul>
+<h3 id="B-Tree"><a href="#B-Tree" class="headerlink" title="B+Tree"></a>B+Tree</h3><p>B+Tree是一种自平衡树状数据结构，适用于磁盘导向的DBMS，支持在O(log(n))时间复杂度内进行搜索、顺序访问、插入和删除操作。它是现代DBMS中实现有序索引的事实标准。</p>
+<ul>
+<li>基本特性<ul>
+<li><p>完美平衡：<strong>所有叶子节点位于同一深度</strong>。</p>
+</li>
+<li><p>半满约束：除根节点外，每个内部节点至少半满（键数在 M&#x2F;2 - 1到 M-1之间）。</p>
+</li>
+<li><p>键值对：每个节点包含一个键值对数组。</p>
+</li>
+<li><p>叶子节点：值可以是记录ID（指向元组位置的指针）或元组数据本身。</p>
+</li>
+<li><p>内部节点：值是指向其他节点的指针，键作为路标（guide posts）指导遍历。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="课程第九讲：索引2"><a href="#课程第九讲：索引2" class="headerlink" title="课程第九讲：索引2"></a>课程第九讲：索引2</h2><h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p>布隆过滤器是一种概率型数据结构，<strong>用于快速判断一个元素是否不在某个集合中</strong>，从而避免不必要的查找开销。它<strong>使用一个位图和多个哈希函数</strong>。</p>
 <ul>
 <li><p><strong>工作原理</strong>：插入元素时，通过多个哈希函数计算其位置并将位图中对应位设为1。查询时，若所有哈希函数对应的位均为1，则元素可能存在（可能存在误判）；若有任一位为0，则元素肯定不存在。</p>
 </li>
@@ -439,11 +463,77 @@
 </li>
 </ul>
 </li>
-<li><p>工作方式：当只有读者时，所有读者并行工作。一旦有写者申请锁，它会等待现有的所有读者完成，然后独占访问，并阻塞后续所有的读者和写者，直到写操作完成。</p>
+<li><p>工作方式：<strong>当只有读者时，所有读者并行工作。一旦有写者申请锁，它会等待现有的所有读者完成，然后独占访问，并阻塞后续所有的读者和写者，直到写操作完成</strong>。</p>
 </li>
 <li><p>优点：在读多写少的场景下，极大地提高了程序的并行性和吞吐量。</p>
 </li>
 <li><p>缺点：实现比 std::mutex复杂，本身有稍大的开销。如果写操作频繁，由于写锁的排他性，性能可能反而不如简单的 std::mutex，因为需要管理更复杂的队列。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>简单示例：保护一个配置表</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs C++">std::map&lt;std::string, <span class="hljs-type">int</span>&gt; config;<br>std::shared_mutex rw_mtx;<br><br><span class="hljs-comment">// 读操作：使用 shared_lock</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">get_config</span><span class="hljs-params">(<span class="hljs-type">const</span> std::string&amp; key)</span> </span>&#123;<br>    <span class="hljs-function">std::shared_lock <span class="hljs-title">lock</span><span class="hljs-params">(rw_mtx)</span></span>; <span class="hljs-comment">// 获取共享锁</span><br>    <span class="hljs-keyword">return</span> config[key];<br>&#125;<br><br><span class="hljs-comment">// 写操作：使用 unique_lock</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">set_config</span><span class="hljs-params">(<span class="hljs-type">const</span> std::string&amp; key, <span class="hljs-type">int</span> value)</span> </span>&#123;<br>    <span class="hljs-function">std::unique_lock <span class="hljs-title">lock</span><span class="hljs-params">(rw_mtx)</span></span>; <span class="hljs-comment">// 获取独占锁</span><br>    config[key] = value;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="具体索引结构的并发控制"><a href="#具体索引结构的并发控制" class="headerlink" title="具体索引结构的并发控制"></a>具体索引结构的并发控制</h3><h4 id="哈希表的门闩控制"><a href="#哈希表的门闩控制" class="headerlink" title="哈希表的门闩控制"></a>哈希表的门闩控制</h4><ul>
+<li><p>静态哈希表：并发控制简单，因为线程访问路径一致，不会出现死锁。调整大小时只需一个全局门闩。</p>
+</li>
+<li><p>动态哈希表：更复杂，但思路类似。</p>
+</li>
+<li><p>门闩粒度：</p>
+<ul>
+<li><p>页级门闩：每个页一个读写门闩。并行性较低，但单个线程访问同一页内多个槽时速度快。</p>
+</li>
+<li><p>槽级门闩：每个槽一个门闩。并行性高，但存储和计算开销大。可使用轻量自旋门闩平衡开销。</p>
+</li>
+<li><p>无门闩实现：可通过CAS指令直接构建无锁的线性探测哈希表。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="B-树的门闩控制（重点与难点）"><a href="#B-树的门闩控制（重点与难点）" class="headerlink" title="B+树的门闩控制（重点与难点）"></a>B+树的门闩控制（重点与难点）</h4><p>B+树并发的主要挑战是防止线程同时修改节点，以及防止遍历线程遇到正在分裂&#x2F;合并的节点。解决方案是门闩攀爬协议。</p>
+<ul>
+<li><p>基本门闩攀爬协议：</p>
+<ul>
+<li><p>核心思想：沿树向下遍历时，先锁住父节点，再锁住子节点。如果子节点是“安全”的，即可释放所有祖先节点的门闩。</p>
+</li>
+<li><p>安全节点定义：</p>
+<ul>
+<li><p>插入时：节点未满。</p>
+</li>
+<li><p>删除时：节点超过半满。</p>
+</li>
+</ul>
+</li>
+<li><p>操作流程：</p>
+<ul>
+<li><p>查找：使用读门闩，从根节点开始，层层攀爬（锁子节点，释放父节点）。</p>
+</li>
+<li><p>插入&#x2F;删除：使用写门闩，向下攀爬。遇到“安全”子节点后，释放所有祖先门闩。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>改进的门闩攀爬协议：</p>
+<ul>
+<li><p>目的：解决基本协议中每次插入&#x2F;删除都需写锁根节点，限制并行性的问题。</p>
+</li>
+<li><p>方法：假设分裂&#x2F;合并罕见，事务先使用读门闩（如同查找操作）到达叶子节点。然后尝试获取叶子节点的写门闩。</p>
+</li>
+<li><p>验证：若叶子节点是“安全”的，则直接操作。</p>
+</li>
+<li><p>重试：若叶子节点“不安全”，则释放所有门闩，重启事务并使用基本协议（从头获取写门闩）来执行。</p>
+</li>
+</ul>
+</li>
+<li><p>叶子节点扫描与死锁：</p>
+<ul>
+<li><p>门闩攀爬（自上而下）本身不会产生死锁。</p>
+</li>
+<li><p>但叶子节点扫描（横向遍历）可能引发死锁，因为线程可能从两个方向同时请求排他门闩。</p>
+</li>
+<li><p>解决方案：编码时采用 “不等待”模式。若无法立即获取兄弟节点的门闩，则操作应中止并重启，而不是等待。这需要由更高层次的系统调度器来处理高竞争场景。</p>
 </li>
 </ul>
 </li>
@@ -485,6 +575,8 @@
       
         <a href="/tags/Bustub/" class="print-no-link">#Bustub</a>
       
+        <a href="/tags/B-Tree/" class="print-no-link">#B+Tree</a>
+      
     </div>
   
 </div>
@@ -496,6 +588,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2025/11/10/Anaconda%E7%9A%84%E4%BD%BF%E7%94%A8/" title="Anaconda的使用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Anaconda的使用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
