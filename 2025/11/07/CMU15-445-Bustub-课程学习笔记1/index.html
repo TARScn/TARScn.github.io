@@ -19,19 +19,19 @@
   <meta name="author" content="Chengxiang">
   <meta name="keywords" content="">
   
-    <meta name="description" content="课程第七讲：哈希表数据结构在DBMS中的角色哈希表是DBMS内部使用的多种数据结构之一，主要用于：  内部元数据管理：如页表、页目录。  核心数据存储：存储元组本身。  临时数据结构：用于加速查询执行，如连接操作中的哈希表。  表索引：帮助快速定位特定元组。   设计数据结构时需考虑两个关键因素：数据组织（布局对性能的影响）和并发控制（多线程安全访问）。 哈希表基础课程第七讲：哈希表数据结构在DB">
+    <meta name="description" content="课程第七讲：哈希表数据结构在DBMS中的角色哈希表是DBMS内部使用的多种数据结构之一，主要用于：  内部元数据管理：如页表、页目录。  核心数据存储：存储元组本身。  临时数据结构：用于加速查询执行，如连接操作中的哈希表。  表索引：帮助快速定位特定元组。   设计数据结构时需考虑两个关键因素：数据组织（布局对性能的影响）和并发控制（多线程安全访问）。 哈希表基础哈希表是一种将键映射到值的数据结">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CMU15-445(Bustub):课程学习笔记1">
 <meta property="og:url" content="http://example.com/2025/11/07/CMU15-445-Bustub-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/index.html">
 <meta property="og:site_name" content="TARScn">
-<meta property="og:description" content="课程第七讲：哈希表数据结构在DBMS中的角色哈希表是DBMS内部使用的多种数据结构之一，主要用于：  内部元数据管理：如页表、页目录。  核心数据存储：存储元组本身。  临时数据结构：用于加速查询执行，如连接操作中的哈希表。  表索引：帮助快速定位特定元组。   设计数据结构时需考虑两个关键因素：数据组织（布局对性能的影响）和并发控制（多线程安全访问）。 哈希表基础课程第七讲：哈希表数据结构在DB">
+<meta property="og:description" content="课程第七讲：哈希表数据结构在DBMS中的角色哈希表是DBMS内部使用的多种数据结构之一，主要用于：  内部元数据管理：如页表、页目录。  核心数据存储：存储元组本身。  临时数据结构：用于加速查询执行，如连接操作中的哈希表。  表索引：帮助快速定位特定元组。   设计数据结构时需考虑两个关键因素：数据组织（布局对性能的影响）和并发控制（多线程安全访问）。 哈希表基础哈希表是一种将键映射到值的数据结">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/hash.jpg">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/bloomFilter.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/skipList.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/fst.png">
 <meta property="article:published_time" content="2025-11-07T03:16:22.000Z">
-<meta property="article:modified_time" content="2025-11-18T12:02:17.495Z">
+<meta property="article:modified_time" content="2025-11-18T12:05:00.487Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="数据库">
 <meta property="article:tag" content="Bustub">
@@ -235,7 +235,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.7k 字
+          4.6k 字
         
       </span>
     
@@ -246,7 +246,7 @@
         
         
         
-          40 分钟
+          39 分钟
         
       </span>
     
@@ -300,19 +300,7 @@
 </li>
 </ul>
 <p>设计数据结构时需考虑两个关键因素：<strong>数据组织</strong>（布局对性能的影响）和<strong>并发控制</strong>（多线程安全访问）。</p>
-<h3 id="哈希表基础"><a href="#哈希表基础" class="headerlink" title="哈希表基础"></a>哈希表基础</h3><h2 id="课程第七讲：哈希表-1"><a href="#课程第七讲：哈希表-1" class="headerlink" title="课程第七讲：哈希表"></a>课程第七讲：哈希表</h2><h3 id="数据结构在DBMS中的角色-1"><a href="#数据结构在DBMS中的角色-1" class="headerlink" title="数据结构在DBMS中的角色"></a>数据结构在DBMS中的角色</h3><p>哈希表是DBMS内部使用的多种数据结构之一，主要用于：</p>
-<ul>
-<li><p><strong>内部元数据管理</strong>：如页表、页目录。</p>
-</li>
-<li><p><strong>核心数据存储</strong>：存储元组本身。</p>
-</li>
-<li><p><strong>临时数据结构</strong>：用于加速查询执行，如连接操作中的哈希表。</p>
-</li>
-<li><p><strong>表索引</strong>：帮助快速定位特定元组。</p>
-</li>
-</ul>
-<p>设计数据结构时需考虑两个关键因素：<strong>数据组织</strong>（布局对性能的影响）和<strong>并发控制</strong>（多线程安全访问）。</p>
-<h3 id="哈希表基础-1"><a href="#哈希表基础-1" class="headerlink" title="哈希表基础"></a>哈希表基础</h3><p>哈希表是一种将键映射到值的数据结构，提供平均O(1)时间复杂度的操作。它包含两个核心部分：</p>
+<h3 id="哈希表基础"><a href="#哈希表基础" class="headerlink" title="哈希表基础"></a>哈希表基础</h3><p>哈希表是一种将键映射到值的数据结构，提供平均O(1)时间复杂度的操作。它包含两个核心部分：</p>
 <ul>
 <li><p><strong>哈希函数</strong>：将键映射到较小范围的整数。关键是在<strong>速度</strong>和<strong>碰撞率</strong>之间取得平衡。推荐使用像Facebook XXHash3这样高速且低碰撞率的非加密哈希函数。</p>
 </li>
