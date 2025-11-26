@@ -33,8 +33,12 @@
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/bloomFilter.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/skipList.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/fst.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/sort.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/hash1.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/hash2.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/joinOperator.png">
 <meta property="article:published_time" content="2025-11-07T03:16:22.000Z">
-<meta property="article:modified_time" content="2025-11-21T03:53:19.753Z">
+<meta property="article:modified_time" content="2025-11-26T02:46:08.284Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="数据库">
 <meta property="article:tag" content="Bustub">
@@ -238,7 +242,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          8.6k 字
+          9.4k 字
         
       </span>
     
@@ -249,7 +253,7 @@
         
         
         
-          72 分钟
+          79 分钟
         
       </span>
     
@@ -922,6 +926,8 @@
 <h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>查询计划中的聚合操作符将一个或多个元组的值聚合成单个标量值。实现聚合有两种方法：(1) 排序和 (2) 哈希。</p>
 <h4 id="排序-1"><a href="#排序-1" class="headerlink" title="排序"></a>排序</h4><p>数据库管理系统（DBMS）首先根据 GROUP BY 键对元组进行排序。如果所有数据都能适应缓冲池（例如，快速排序），则可以使用内存中的排序算法；如果数据量超过内存，则使用外部归并排序算法。DBMS 随后对排序后的数据进行顺序扫描以计算聚合。该操作器的输出将按键排序。</p>
 <p>在进行排序聚合时，重要的是对查询操作进行排序以最大化效率。例如，如果查询需要过滤，最好先执行过滤，然后再对过滤后的数据进行排序，以减少需要排序的数据量。</p>
+<img src="/img/CMU15-445-Bustub-project-课程学习笔记1/sort.png" srcset="/img/loading.gif" lazyload alt="排序聚合" style="display: block; margin: 0 auto; width: 50%; height:50%;">
+
 <h4 id="哈希-散列"><a href="#哈希-散列" class="headerlink" title="哈希(散列)"></a>哈希(散列)</h4><p>对于计算聚合而言，哈希的效率可能比排序更高，尤其是在输出顺序不重要的情况下。数据库管理系统（DBMS）在扫描表时会动态生成一个临时哈希表。对于每条记录，检查哈希表中是否已存在条目，并执行相应的修改。如果哈希表的大小超出内存容量，DBMS 需要将其溢写到磁盘上。当数据不适合内存时，通常采用分治策略来计算聚合，这个过程包含两个阶段：</p>
 <ul>
 <li><strong>处理大数据（外部哈希聚合）</strong>：当哈希表太大无法放入内存时，采用两阶段法：<ul>
@@ -930,6 +936,11 @@
 </ul>
 </li>
 </ul>
+<img src="/img/CMU15-445-Bustub-project-课程学习笔记1/hash1.png" srcset="/img/loading.gif" lazyload alt="哈希聚合1" style="display: block; margin: 0 auto; width: 50%; height:50%;">
+
+<img src="/img/CMU15-445-Bustub-project-课程学习笔记1/hash2.png" srcset="/img/loading.gif" lazyload alt="哈希聚合2" style="display: block; margin: 0 auto; width: 50%; height:50%;">
+
+
 <h3 id="总结对比"><a href="#总结对比" class="headerlink" title="总结对比"></a>总结对比</h3><table>
 <thead>
 <tr>
@@ -960,6 +971,159 @@
 </tr>
 </tbody></table>
 <p>总而言之，这份文档详细阐述了数据库在执行查询时，如何在受限的内存条件下，通过精巧的算法设计（主要是外部归并排序和外部哈希聚合）高效地完成排序和聚合任务。</p>
+<p>下面是一份<strong>根据你提供的 PDF 内容整理的 Markdown（MD）格式笔记</strong>。<br>内容经过结构化整理，但<strong>不会改变原始内容含义</strong>，你可以直接复制到你的编辑器中使用。</p>
+<h2 id="第十二讲：连接"><a href="#第十二讲：连接" class="headerlink" title="第十二讲：连接"></a>第十二讲：连接</h2><p>数据库设计的目标之一：<strong>减少重复信息</strong>。<br>因此使用规范化理论将数据拆分为多个表，查询时需要通过 <strong>JOIN</strong> 恢复原始数据。</p>
+<p>本节主要关注 <strong>inner equijoin（等值内连接）</strong> 的实现算法。<br>在执行 join 时通常让 <strong>较小的表作为 outer table</strong>（外表）。<br>多路 join（multi-way joins）主要出现在研究领域（如 WCOJ）。</p>
+<h3 id="Join-Operators"><a href="#Join-Operators" class="headerlink" title="Join Operators"></a>Join Operators</h3><p>查询计划是一个<strong>自底向上的树结构</strong>, join 输出是连接两个匹配元组。</p>
+<img src="/img/CMU15-445-Bustub-project-课程学习笔记1/joinOperator.png" srcset="/img/loading.gif" lazyload alt="树结构" style="display: block; margin: 0 auto; width: 50%; height:50%;">
+
+<h3 id="Join-输出方式"><a href="#Join-输出方式" class="headerlink" title="Join 输出方式"></a>Join 输出方式</h3><p>DBMS 设计 join 输出时有两种主要策略：</p>
+<h4 id="早物化（Early-Materialization）"><a href="#早物化（Early-Materialization）" class="headerlink" title="早物化（Early Materialization）"></a>早物化（Early Materialization）</h4><ul>
+<li>将 outer 与 inner 中需要的所有属性复制到中间结果。</li>
+<li>优点：后续操作无需再次访问底表。</li>
+<li>缺点：需要更多内存。</li>
+</ul>
+<h4 id="晚物化（Late-Materialization）"><a href="#晚物化（Late-Materialization）" class="headerlink" title="晚物化（Late Materialization）"></a>晚物化（Late Materialization）</h4><ul>
+<li>只复制 join key 和 record ids。</li>
+<li>特别适合 <strong>列存储（column store）</strong>。</li>
+</ul>
+<blockquote>
+<p>现实中 DBMS 往往混合使用早物化与晚物化。</p>
+</blockquote>
+<h3 id="Cost-Model（成本模型）"><a href="#Cost-Model（成本模型）" class="headerlink" title="Cost Model（成本模型）"></a>Cost Model（成本模型）</h3><p>I&#x2F;O 是最主要的成本（忽略计算与网络代价）。<br>成本包含：</p>
+<ul>
+<li>从磁盘读取页面</li>
+<li>写出中间结果</li>
+</ul>
+<p>不包含：</p>
+<ul>
+<li>输出最终结果的 I&#x2F;O（不同算法输出一致，相互没差别）</li>
+</ul>
+<p>假设：</p>
+<ul>
+<li>R（outer table）有 M pages，m tuples</li>
+<li>S（inner table）有 N pages，n tuples</li>
+</ul>
+<p>JOIN 通常是自然连接：R ▷◁ S。</p>
+<h3 id="Nested-Loop-Join（嵌套循环连接）"><a href="#Nested-Loop-Join（嵌套循环连接）" class="headerlink" title="Nested Loop Join（嵌套循环连接）"></a>Nested Loop Join（嵌套循环连接）</h3><p>最基本的想法：双层循环比较所有元组。</p>
+<h4 id="Naive-Nested-Loop-Join"><a href="#Naive-Nested-Loop-Join" class="headerlink" title="Naive Nested Loop Join"></a>Naive Nested Loop Join</h4><p>对 outer 中每一个元组，扫描 inner 全表。</p>
+<p><strong>Cost:</strong></p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs excel">M + (m × <span class="hljs-built_in">N</span>)<br></code></pre></td></tr></table></figure>
+
+<h4 id="Block-Nested-Loop-Join"><a href="#Block-Nested-Loop-Join" class="headerlink" title="Block Nested Loop Join"></a>Block Nested Loop Join</h4><p>按 block 处理，而不是单个 tuple。</p>
+<p>如果 buffer 有 B 页可用：</p>
+<ul>
+<li>B-2 页用于 outer</li>
+<li>1 页用于 inner</li>
+<li>1 页用于结果输出</li>
+</ul>
+<p><strong>Cost:</strong></p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lisp">M + (<span class="hljs-name">ceil</span>(<span class="hljs-name">M</span> / (<span class="hljs-name">B-2</span>)) × N)<br></code></pre></td></tr></table></figure>
+
+<h4 id="Index-Nested-Loop-Join"><a href="#Index-Nested-Loop-Join" class="headerlink" title="Index Nested Loop Join"></a>Index Nested Loop Join</h4><p>如果 inner table 上有 join key 的索引：</p>
+<ul>
+<li>outer 无索引</li>
+<li>inner 有索引（或临时构建）</li>
+</ul>
+<p>每个元组进行索引 probe，成本为 C。</p>
+<p><strong>Cost:</strong></p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lisp">M + (<span class="hljs-name">m</span> × C)<br></code></pre></td></tr></table></figure>
+
+<p>索引 greatly reduces cost。</p>
+<h3 id="Sort-Merge-Join"><a href="#Sort-Merge-Join" class="headerlink" title="Sort-Merge Join"></a>Sort-Merge Join</h3><p>流程：</p>
+<ol>
+<li>对 R 与 S 按 join key 排序（常用外部归并排序）</li>
+<li>像 merge sort 一样线性扫描两个表进行匹配</li>
+</ol>
+<p>优势：</p>
+<ul>
+<li>如果已有 clustered index，则无需排序</li>
+<li>或者结果本身需要按 join key 排序</li>
+</ul>
+<p>代价（假设 B 页 buffer）：</p>
+<ul>
+<li>排序成本（R）：</li>
+</ul>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs isbl"><span class="hljs-number">2</span><span class="hljs-variable">M</span> × (<span class="hljs-number">1</span> + <span class="hljs-function"><span class="hljs-title">ceil</span>(<span class="hljs-variable">log_</span>&#123;<span class="hljs-variable">B</span>-<span class="hljs-number">1</span>&#125;(<span class="hljs-title">ceil</span>(<span class="hljs-variable">M</span> / <span class="hljs-variable">B</span>))))</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>排序成本（S）：</li>
+</ul>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs isbl"><span class="hljs-number">2</span><span class="hljs-variable">N</span> × (<span class="hljs-number">1</span> + <span class="hljs-function"><span class="hljs-title">ceil</span>(<span class="hljs-variable">log_</span>&#123;<span class="hljs-variable">B</span>-<span class="hljs-number">1</span>&#125;(<span class="hljs-title">ceil</span>(<span class="hljs-variable">N</span> / <span class="hljs-variable">B</span>))))</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>merge 成本：<code>M + N</code></li>
+</ul>
+<h3 id="Hash-Join"><a href="#Hash-Join" class="headerlink" title="Hash Join"></a>Hash Join</h3><p>hash join 使用哈希函数将元组组织成多个桶，当 join key 相等时，必然落入同一个桶。</p>
+<p>适用范围：<strong>等值连接(equi-join)</strong>。</p>
+<h4 id="Basic-Hash-Join"><a href="#Basic-Hash-Join" class="headerlink" title="Basic Hash Join"></a>Basic Hash Join</h4><h5 id="Phase-1：Build"><a href="#Phase-1：Build" class="headerlink" title="Phase 1：Build"></a>Phase 1：Build</h5><ul>
+<li>使用 outer 建立哈希表（h1）</li>
+</ul>
+<h5 id="Phase-2：Probe"><a href="#Phase-2：Probe" class="headerlink" title="Phase 2：Probe"></a>Phase 2：Probe</h5><ul>
+<li>对 inner 使用相同 h1 并查找对应记录</li>
+</ul>
+<p>优化：<br>可在 build 阶段构建 <strong>Bloom Filter</strong> 避免不必要的 I&#x2F;O。</p>
+<h4 id="Grace-Hash-Join-（分区哈希连接）"><a href="#Grace-Hash-Join-（分区哈希连接）" class="headerlink" title="Grace Hash Join （分区哈希连接）"></a>Grace Hash Join （分区哈希连接）</h4><p>适合数据放不进内存的情况。</p>
+<h5 id="Phase-1：Partition"><a href="#Phase-1：Partition" class="headerlink" title="Phase 1：Partition"></a>Phase 1：Partition</h5><ul>
+<li>outer 和 inner 都按 h1 分区</li>
+<li>分区写回磁盘（必要时递归分区）</li>
+</ul>
+<h5 id="Phase-2：Probe-1"><a href="#Phase-2：Probe-1" class="headerlink" title="Phase 2：Probe"></a>Phase 2：Probe</h5><ul>
+<li>对每个分区执行嵌套循环连接（小规模，因此是 in-memory）</li>
+</ul>
+<p><strong>Cost:</strong></p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mathematica"><span class="hljs-built_in">Partition</span><span class="hljs-operator">:</span> <span class="hljs-number">2</span> × <span class="hljs-punctuation">(</span><span class="hljs-variable">M</span> <span class="hljs-operator">+</span> <span class="hljs-built_in">N</span><span class="hljs-punctuation">)</span><br><span class="hljs-variable">Probe</span><span class="hljs-operator">:</span>     <span class="hljs-variable">M</span> <span class="hljs-operator">+</span> <span class="hljs-built_in">N</span><br><span class="hljs-built_in">Total</span><span class="hljs-operator">:</span>     <span class="hljs-number">3</span> × <span class="hljs-punctuation">(</span><span class="hljs-variable">M</span> <span class="hljs-operator">+</span> <span class="hljs-built_in">N</span><span class="hljs-punctuation">)</span><br></code></pre></td></tr></table></figure>
+
+<p>矩阵倾斜（skew）情况下可采用 Hybrid Hash Join，但难以实现。</p>
+<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>不同 join 算法性能总结：</p>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Cost</th>
+<th>Example Time</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Simple Nested Loop</td>
+<td>M + m·N</td>
+<td>1.4h</td>
+</tr>
+<tr>
+<td>Block Nested Loop</td>
+<td>M + (M·N)</td>
+<td>50s</td>
+</tr>
+<tr>
+<td>Index Nested Loop</td>
+<td>M + m·C</td>
+<td>depends</td>
+</tr>
+<tr>
+<td>Sort-Merge Join</td>
+<td>M + N + sort cost</td>
+<td>0.75s</td>
+</tr>
+<tr>
+<td>Hash Join</td>
+<td>3(M+N)</td>
+<td>0.45s</td>
+</tr>
+</tbody></table>
+<p>结论：</p>
+<ul>
+<li><p>Hash Join 通常最快</p>
+</li>
+<li><p>Sort-Merge 在以下情况更好：</p>
+<ul>
+<li>key 分布不均匀</li>
+<li>数据已排序</li>
+<li>输出需要排序</li>
+</ul>
+</li>
+<li><p>DBMS 通常会动态选择排序或哈希 join</p>
+</li>
+</ul>
 
                 
               </div>
