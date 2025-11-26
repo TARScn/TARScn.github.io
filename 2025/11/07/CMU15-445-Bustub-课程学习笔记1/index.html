@@ -38,7 +38,7 @@
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/hash2.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/joinOperator.png">
 <meta property="article:published_time" content="2025-11-07T03:16:22.000Z">
-<meta property="article:modified_time" content="2025-11-26T02:46:08.284Z">
+<meta property="article:modified_time" content="2025-11-26T02:48:00.651Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="数据库">
 <meta property="article:tag" content="Bustub">
@@ -975,7 +975,7 @@
 <h2 id="第十二讲：连接"><a href="#第十二讲：连接" class="headerlink" title="第十二讲：连接"></a>第十二讲：连接</h2><p>数据库设计的目标之一：<strong>减少重复信息</strong>。<br>因此使用规范化理论将数据拆分为多个表，查询时需要通过 <strong>JOIN</strong> 恢复原始数据。</p>
 <p>本节主要关注 <strong>inner equijoin（等值内连接）</strong> 的实现算法。<br>在执行 join 时通常让 <strong>较小的表作为 outer table</strong>（外表）。<br>多路 join（multi-way joins）主要出现在研究领域（如 WCOJ）。</p>
 <h3 id="Join-Operators"><a href="#Join-Operators" class="headerlink" title="Join Operators"></a>Join Operators</h3><p>查询计划是一个<strong>自底向上的树结构</strong>, join 输出是连接两个匹配元组。</p>
-<img src="/img/CMU15-445-Bustub-project-课程学习笔记1/joinOperator.png" srcset="/img/loading.gif" lazyload alt="树结构" style="display: block; margin: 0 auto; width: 50%; height:50%;">
+<img src="/img/CMU15-445-Bustub-project-课程学习笔记1/joinOperator.png" srcset="/img/loading.gif" lazyload alt="树结构" style="display: block; margin: 0 auto; width: 30%; height:30%;">
 
 <h3 id="Join-输出方式"><a href="#Join-输出方式" class="headerlink" title="Join 输出方式"></a>Join 输出方式</h3><p>DBMS 设计 join 输出时有两种主要策略：</p>
 <h4 id="早物化（Early-Materialization）"><a href="#早物化（Early-Materialization）" class="headerlink" title="早物化（Early Materialization）"></a>早物化（Early Materialization）</h4><ul>
