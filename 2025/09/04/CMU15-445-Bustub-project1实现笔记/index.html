@@ -40,8 +40,9 @@
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/page_guard3.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/bpm1.png">
 <meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/bpm2.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/result.png">
 <meta property="article:published_time" content="2025-09-04T01:32:56.000Z">
-<meta property="article:modified_time" content="2025-09-10T12:42:42.696Z">
+<meta property="article:modified_time" content="2025-11-28T08:43:56.122Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="数据库">
 <meta property="article:tag" content="Bustub">
@@ -440,6 +441,9 @@
 <li><strong>线程安全设计</strong></li>
 </ul>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs CPP"><span class="hljs-keyword">class</span> <span class="hljs-title class_">BufferPoolManager</span> &#123;<br>    ...<br>    std::shared_ptr&lt;std::mutex&gt; bpm_latch_;<br>    ...<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">FrameHeader</span> &#123;<br>    ...<br>    <span class="hljs-comment">/** @brief The readers / writer latch for this frame. */</span><br>    std::shared_mutex rwlatch_;<br>    ...<br>&#125;<br><span class="hljs-comment">// 使用组合锁策略</span><br><span class="hljs-function">std::scoped_lock <span class="hljs-title">lock</span><span class="hljs-params">(*bpm_latch_)</span></span>;  <span class="hljs-comment">// 粗粒度锁</span><br><span class="hljs-function">std::scoped_lock <span class="hljs-title">frame_lock</span><span class="hljs-params">(frame-&gt;rwlatch_)</span></span>;  <span class="hljs-comment">// 细粒度锁</span><br>frame-&gt;pin_count_.<span class="hljs-built_in">fetch_add</span>(<span class="hljs-number">1</span>);  <span class="hljs-comment">// 无锁原子操作,查看是否存在引用</span><br></code></pre></td></tr></table></figure>
+
+<img src="/img/CMU15-445-Bustub-project1实现笔记/result.png" srcset="/img/loading.gif" lazyload alt="测试结果" style="display: block; margin: 0 auto; width: 50%; height:50%;">
+
                 
               </div>
             
