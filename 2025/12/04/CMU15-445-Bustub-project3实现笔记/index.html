@@ -19,14 +19,18 @@
   <meta name="author" content="Chengxiang">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="article">
+    <meta name="description" content="前置知识点 迭代器数据库查询模型Volcano 模型（也称为 Iterator Model 或 Pipeline Model）是数据库查询处理中最经典、最通用的执行模型。它由 Goetz Graefe 在 1990 年代提出，几乎被用于所有传统的行式数据库系统（如 PostgreSQL, SQLite, MySQL 等）。 简单来说，它的核心原理是将所有的查询操作（如扫描、过滤、连接、排序）都抽象">
+<meta property="og:type" content="article">
 <meta property="og:title" content="CMU15-445(Bustub):project3实现笔记">
 <meta property="og:url" content="http://example.com/2025/12/04/CMU15-445-Bustub-project3%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="TARScn">
+<meta property="og:description" content="前置知识点 迭代器数据库查询模型Volcano 模型（也称为 Iterator Model 或 Pipeline Model）是数据库查询处理中最经典、最通用的执行模型。它由 Goetz Graefe 在 1990 年代提出，几乎被用于所有传统的行式数据库系统（如 PostgreSQL, SQLite, MySQL 等）。 简单来说，它的核心原理是将所有的查询操作（如扫描、过滤、连接、排序）都抽象">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-12-04T01:30:06.000Z">
-<meta property="article:modified_time" content="2025-12-19T09:52:23.307Z">
+<meta property="article:modified_time" content="2025-12-25T09:06:59.374Z">
 <meta property="article:author" content="Chengxiang">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="Bustub">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -225,7 +229,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          2.5k 字
         
       </span>
     
@@ -236,7 +240,7 @@
         
         
         
-          1 分钟
+          22 分钟
         
       </span>
     
@@ -278,7 +282,227 @@
             
               <div class="markdown-body">
                 
-                
+                <h2 id="前置知识点"><a href="#前置知识点" class="headerlink" title="前置知识点"></a>前置知识点</h2><hr>
+<h3 id="迭代器数据库查询模型"><a href="#迭代器数据库查询模型" class="headerlink" title="迭代器数据库查询模型"></a>迭代器数据库查询模型</h3><p>Volcano 模型（也称为 Iterator Model 或 Pipeline Model）是数据库查询处理中最经典、最通用的执行模型。它由 Goetz Graefe 在 1990 年代提出，几乎被用于所有传统的行式数据库系统（如 PostgreSQL, SQLite, MySQL 等）。</p>
+<p>简单来说，它的核心原理是将所有的查询操作（如扫描、过滤、连接、排序）都抽象为迭代器（Iterator），并通过<strong>拉取 Pull-based</strong>的方式逐行处理数据。</p>
+<h4 id="核心抽象：标准接口"><a href="#核心抽象：标准接口" class="headerlink" title="核心抽象：标准接口"></a>核心抽象：标准接口</h4><p>在 Volcano 模型中，查询计划树（Query Plan Tree）中的每一个节点（Operator）都被看作一个迭代器。无论这个节点是复杂的 Hash Join 还是简单的 Sequential Scan，它们都必须实现一组统一的接口。</p>
+<p>通常包含以下三个核心方法：</p>
+<ol>
+<li><p>Open(): 初始化操作。</p>
+<ul>
+<li><p>设置内部状态，为子节点调用 Open()。</p>
+</li>
+<li><p>例如：Sequential Scan 会打开文件并指向第一条记录；Sort 可能会在此时读取所有子节点数据并进行排序。</p>
+</li>
+</ul>
+</li>
+<li><p>Next(): 核心执行逻辑。</p>
+<ul>
+<li><p>这是驱动数据流动的关键。当父节点调用子节点的 Next() 时，子节点返回**一个元组（Tuple）**或者一个“结束标记”（EOF&#x2F;Null）。</p>
+</li>
+<li><p>关键点：这是一个Tuple-at-a-time（一次处理一行）的模型。</p>
+</li>
+</ul>
+</li>
+<li><p>Close(): 清理操作。</p>
+<ul>
+<li>释放资源，关闭文件句柄，通知子节点关闭。</li>
+</ul>
+</li>
+</ol>
+<h4 id="工作流：自顶向下的“拉取”模式"><a href="#工作流：自顶向下的“拉取”模式" class="headerlink" title="工作流：自顶向下的“拉取”模式"></a>工作流：自顶向下的“拉取”模式</h4><p>Volcano 模型的数据流向和控制流向是相反的：</p>
+<ul>
+<li><p>控制流（Control Flow）：从根节点（Root）向下传递，父节点主动调用子节点的 Next()。</p>
+</li>
+<li><p>数据流（Data Flow）：数据从叶子节点（Leaf）被“拉”向根节点。</p>
+</li>
+</ul>
+<p><strong>执行过程示例</strong><br>假设有一个查询：<code>SELECT * FROM Users WHERE age &gt; 20</code>。 执行计划树通常是：<code>Filter (age &gt; 20) -&gt; SeqScan (Users table)</code>。</p>
+<ol>
+<li><p>用户调用根节点 Filter 的 Next()。</p>
+</li>
+<li><p>Filter 自身没有数据，它调用子节点 SeqScan 的 Next()。</p>
+</li>
+<li><p>SeqScan 读取磁盘上的第一行数据（例如 age&#x3D;18），并将其返回给 Filter。</p>
+</li>
+<li><p>Filter 拿到数据进行检查：</p>
+<ul>
+<li><p>如果 age &gt; 20 为真：Filter 将该行返回给用户。</p>
+</li>
+<li><p>如果 age &gt; 20 为假（如本例）：Filter 丢弃该行，再次调用 SeqScan 的 Next()，直到找到符合条件的行或收到 EOF。</p>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="多版本并发控制-MVCC"><a href="#多版本并发控制-MVCC" class="headerlink" title="多版本并发控制(MVCC)"></a>多版本并发控制(MVCC)</h3><h4 id="核心思想：读写不冲突"><a href="#核心思想：读写不冲突" class="headerlink" title="核心思想：读写不冲突"></a>核心思想：读写不冲突</h4><p>MVCC 的核心逻辑是：“即便有人在改数据，我依然可以读到该数据在该操作之前的旧版本。”</p>
+<ul>
+<li>读不阻塞写</li>
+<li>写不阻塞读</li>
+</ul>
+<p>这就好比你在编辑一份在线文档，当你还没点击“保存”时，其他人看到的依然是修改前的版本，而互不干扰。</p>
+<h4 id="MVCC实现"><a href="#MVCC实现" class="headerlink" title="MVCC实现"></a>MVCC实现</h4><p>MVCC 的实现依赖于三个关键组件：隐藏列、回滚日志（Undo Log） 和 一致性视图（Read View）。</p>
+<ol>
+<li><p>隐藏列</p>
+<p>InnoDB 会在每一行数据的后面悄悄加上几个隐藏字段：</p>
+<ul>
+<li><p>DB_TRX_ID：记录最后一次修改该行数据的事务 ID。</p>
+</li>
+<li><p>DB_ROLL_PTR：回滚指针，指向该行数据上一个版本的 Undo Log 记录。</p>
+</li>
+</ul>
+</li>
+<li><p>回滚日志（Undo Log）<br>每当一条记录被修改时，InnoDB 不会直接覆盖旧数据，而是把旧数据写入 Undo Log 中。通过 DB_ROLL_PTR，这些旧版本的数据会像链表一样串起来，形成一个版本链。</p>
+</li>
+<li><p>一致性视图<br>当一个事务发起查询时，MVCC 会生成一个 Read View。它像一张“快照”，记录了当前系统中哪些事务是活跃的（还没提交的）。</p>
+<p>根据 Read View 的规则，系统会判断版本链中哪个版本对当前事务是可见的：</p>
+<ul>
+<li><p>如果版本 ID 在 Read View 创建前已提交 -&gt; 可见。</p>
+</li>
+<li><p>如果版本 ID 在 Read View 创建后才开启 -&gt; 不可见。</p>
+</li>
+<li><p>如果版本 ID 属于当前正在运行且未提交的事务 -&gt; 不可见。</p>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="部件实现：访问方法执行器"><a href="#部件实现：访问方法执行器" class="headerlink" title="部件实现：访问方法执行器"></a>部件实现：访问方法执行器</h2><p>在本项目中，将实现允许 BusTub 执行查询的组件。将创建执行 SQL 查询的操作符执行器，并实现优化规则以转换查询计划。</p>
+<hr>
+<h3 id="SeqScanExecutor类"><a href="#SeqScanExecutor类" class="headerlink" title="SeqScanExecutor类"></a>SeqScanExecutor类</h3><p><strong>功能：</strong> SeqScanExecutor 遍历一个表，并逐个返回其元组。</p>
+<p><strong>类函数：</strong></p>
+<ol>
+<li><p>Init()：初始化阶段：</p>
+<ul>
+<li>这是 Volcano 模型中的 Open() 操作。</li>
+<li>逻辑：准备工作。它不读取数据，<code>只是把“迭代器指针”指向表的开头</code>。</li>
+</ul>
+</li>
+<li><p>Next()：执行阶段：</p>
+<ul>
+<li>这是 Volcano 模型中的 Next() 操作。父节点会不断调用这个函数来“拉取”数据。</li>
+<li>逻辑：<code>获取当前迭代器指向的数据</code>-&gt;<code>代器前移，为下一次调用做准备</code>-&gt;<code>循环直到表读完</code></li>
+<li>注意：对已删除数据的处理，因为物理上存在的行（在磁盘 Page 上），逻辑上可能已经被删除了，所以要检查is_deleted_。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="InsertExecutor类"><a href="#InsertExecutor类" class="headerlink" title="InsertExecutor类"></a>InsertExecutor类</h3><p><strong>功能：</strong> InsertExecutor 将元组插入表并更新受影响的索引。它恰好有一个子节点，用于生成要插入表中的值。规划器将确保这些值与表的架构相同。执行器将产生一个整数类型的单个元组作为输出，指示已插入表中的行数。在向表中插入数据时，请记住更新索引，如果该表有关联的索引。</p>
+<p><strong>类函数：</strong></p>
+<ol>
+<li>Init():初始化子节点以便后续拉取数据</li>
+</ol>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scss">void InsertExecutor::<span class="hljs-built_in">Init</span>() &#123; <br>    child_-&gt;<span class="hljs-built_in">Init</span>(); <span class="hljs-comment">// 递归调用，让子节点（比如 ValuesExecutor 或 SeqScan）准备好数据</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>Next()：执行阶段：<ul>
+<li>插入操作最终只返回一行数据（即受影响的行数 insert_count），所以如果 Next 被第二次调用，必须直接返回 false，表示执行结束。</li>
+<li>逻辑：<code>检查 is_end_ 标志</code>-&gt;<code>循环拉取与物理写入(从子节点获取数据、写入堆表、同步更新所有索引)</code>-&gt;<code>构造返回结果</code></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="UpdateExecutor类"><a href="#UpdateExecutor类" class="headerlink" title="UpdateExecutor类"></a>UpdateExecutor类</h3><p><strong>功能：</strong> UpdateExecutor 修改指定表中的现有元组。执行器将产生一个整数类型的单个元组作为输出，指示已更新的行数。请记住更新受更新影响的任何索引。</p>
+<p><strong>类函数：</strong><br>和 InsertExecutor 一样，Update 也是一个<strong>Pipeline Breaker（流水线阻断点）</strong>。</p>
+<ul>
+<li>它会一次性处理完子节点传来的所有需要更新的数据。</li>
+<li>最终只返回一行结果：更新成功的条数 (count)。</li>
+</ul>
+<p>Next()：执行阶段：<br><code>遍历要更新的数据</code>-&gt;<code>逻辑删除旧数据</code>-&gt;<code>构造新数据</code>-&gt;<code>插入新数据</code>-&gt;<code>更新索引</code></p>
+<hr>
+<h3 id="DeleteExecutor类"><a href="#DeleteExecutor类" class="headerlink" title="DeleteExecutor类"></a>DeleteExecutor类</h3><p><strong>功能：</strong> 它与要从表中删除的记录恰好有一个子节点。删除执行器应产生一个整数输出，表示它从表中删除的行数。它还需要更新任何受影响的索引。</p>
+<p><strong>类函数：</strong></p>
+<ol>
+<li>Init():初始化子节点以便后续拉取数据</li>
+</ol>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs scss">void InsertExecutor::<span class="hljs-built_in">Init</span>() &#123; <br>    child_-&gt;<span class="hljs-built_in">Init</span>(); <span class="hljs-comment">// 递归调用，让子节点（比如 ValuesExecutor 或 SeqScan）准备好数据</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>Next():<br><code>遍历待删除数据</code>-&gt;<code>获取当前行的元数据、将删除标记置为 true、写回元数据</code>-&gt;<code>更新索引</code></li>
+</ol>
+<hr>
+<h3 id="IndexScanExecutor类"><a href="#IndexScanExecutor类" class="headerlink" title="IndexScanExecutor类"></a>IndexScanExecutor类</h3><p><strong>功能：</strong> IndexScanExecutor 遍历索引以检索 RIDs 以获取元组。然后，该操作员使用这些 RID 来检索相应表中的元组。接着逐个发出这些元组。</p>
+<p>如果说之前的 SeqScan 是“傻瓜式”地从第一页翻到最后一页，那么 IndexScan 就是 <strong>“查字典”</strong> ：先通过 B+树索引找到数据的 <strong>物理地址（RID）</strong>，然后再去堆表（Table Heap）里抓取真正的数据。</p>
+<p><strong>类函数：</strong></p>
+<p>Next():</p>
+<ul>
+<li>这个算子的工作流程可以概括为：<code>遍历 B+树叶子节点</code> -&gt; <code>拿到 RID</code> -&gt; <code>回表查数据</code>。</li>
+<li>为什么需要回表?:B+树里只存了 &lt;Key, RID&gt;，光有 Key 是不够的。所以必须通过 RID 去 Heap 中读取完整数据</li>
+</ul>
+<hr>
+<h2 id="部件实现：聚合与连接执行器"><a href="#部件实现：聚合与连接执行器" class="headerlink" title="部件实现：聚合与连接执行器"></a>部件实现：聚合与连接执行器</h2><p>需要添加一个聚合执行器、多个连接执行器，并使优化器在规划查询时能够在嵌套循环连接和哈希连接之间进行选择。</p>
+<hr>
+<h3 id="AggregationExecutor类"><a href="#AggregationExecutor类" class="headerlink" title="AggregationExecutor类"></a>AggregationExecutor类</h3><p><strong>功能：</strong> 聚合执行器为每个输入分组计算聚合函数。它有一个子节点。输出模式由分组列和聚合列组成。BusTub 采用的是 <strong>哈希聚合</strong> ，以分组列为键。</p>
+<p><strong>示例：</strong><br>假设有一张表 Student，我们要执行：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs n1ql"><span class="hljs-keyword">SELECT</span> Major, <span class="hljs-built_in">COUNT</span>(*), <span class="hljs-built_in">AVG</span>(GPA) <br><span class="hljs-keyword">FROM</span> Student <br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> Major;<br></code></pre></td></tr></table></figure>
+<p>输入数据流：</p>
+<pre><code class="hljs">&#123;CS, 3.5&#125;
+
+&#123;Math, 3.8&#125;
+
+&#123;CS, 3.9&#125;
+
+&#123;English, 3.2&#125;
+</code></pre>
+<p>执行过程：</p>
+<ul>
+<li><p>读第 1 行 {CS, 3.5}:</p>
+<ul>
+<li><p>哈希表中没有 “CS”。</p>
+</li>
+<li><p>插入: Key&#x3D;”CS”, Val&#x3D;{Count&#x3D;1, SumGPA&#x3D;3.5}</p>
+</li>
+</ul>
+</li>
+<li><p>读第 2 行 {Math, 3.8}:</p>
+<ul>
+<li><p>哈希表中没有 “Math”。</p>
+</li>
+<li><p>插入: Key&#x3D;”Math”, Val&#x3D;{Count&#x3D;1, SumGPA&#x3D;3.8}</p>
+</li>
+</ul>
+</li>
+<li><p>读第 3 行 {CS, 3.9}:</p>
+<ul>
+<li><p>哈希表中已有 “CS”。</p>
+</li>
+<li><p>更新: 拿出旧值，Count变成 1+1&#x3D;2，SumGPA变成 3.5+3.9&#x3D;7.4。</p>
+</li>
+<li><p>当前 “CS” 条目: Val&#x3D;{Count&#x3D;2, SumGPA&#x3D;7.4}</p>
+</li>
+</ul>
+</li>
+<li><p>读第 4 行 {English, 3.2}:</p>
+<ul>
+<li>插入: Key&#x3D;”English”, Val&#x3D;{Count&#x3D;1, SumGPA&#x3D;3.2}</li>
+</ul>
+</li>
+</ul>
+<p>最终输出: 遍历哈希表，计算 AVG (Sum&#x2F;Count)，输出结果</p>
+<p><strong>类函数：</strong></p>
+<ol>
+<li>Init():<ul>
+<li>这是最关键的一步。在 Init 结束前，父节点拿不到任何数据。</li>
+<li>逻辑： <code>遍历子节点的所有数据</code>-&gt;<code>生成 Key (分组依据)、生成 Value (待聚合的值)</code>-&gt;<code>插入或更新哈希表</code>-&gt;<code>准备迭代器，供 Next 阶段使用</code></li>
+</ul>
+</li>
+<li>Next():<ul>
+<li>当 Init 把哈希表建好后，Next 的工作就很简单了：遍历哈希表，把结果吐出来。<br> 逻辑：</li>
+<li><code>情况 A: 哈希表里有数据</code>-&gt;<code>获取 Group By 的列 (Key)</code>-&gt;<code>获取聚合后的结果 (Value)</code>-&gt;<code>封装成 Tuple 返回</code></li>
+<li><code>情况 B: 哈希表是空的</code>-&gt;<code>没有‘GROUP BY’，例如：SELECT COUNT(*) FROM empty_table; -&gt; 结果应该是 0</code>、<code>有‘GROUP BY’，SELECT COUNT(*) FROM empty_table GROUP BY id; -&gt; 结果应该是null</code></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="HashJoinExecutor类"><a href="#HashJoinExecutor类" class="headerlink" title="HashJoinExecutor类"></a>HashJoinExecutor类</h3><p><strong>功能：</strong> HashJoinExecutor 实现内连接和外连接。该操作符的输出模式是左表的所有列，然后是右表的所有列。与聚合类似，你可以假设用于连接的哈希表可以完全放入内存中。</p>
+<p><strong>类函数：</strong></p>
+<ol>
+<li>Init():<ul>
+<li>逻辑：<code>初始化左右两个子节点，准备好从它们那里拉取数据</code>-&gt;<code>构建阶段 (Build Phase) - 处理右表(遍历右表-&gt;计算 Key-&gt;插入哈希表)</code>-&gt;<code>探测阶段 (Probe Phase) - 处理左表(这一步遍历左表（Left Child），并根据连接类型（Inner vs Left）执行不同的逻辑)</code></li>
+</ul>
+</li>
+</ol>
+
                 
               </div>
             
@@ -286,6 +510,36 @@
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/CMU15-445/" class="category-chain-item">CMU15-445</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="print-no-link">#数据库</a>
+      
+        <a href="/tags/Bustub/" class="print-no-link">#Bustub</a>
+      
+    </div>
   
 </div>
 
@@ -365,6 +619,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -557,6 +817,49 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
