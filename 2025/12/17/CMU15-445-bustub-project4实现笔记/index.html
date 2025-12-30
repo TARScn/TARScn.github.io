@@ -19,15 +19,22 @@
   <meta name="author" content="Chengxiang">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="article">
+    <meta name="description" content="锁管理器为了确保事务操作的正确交错，数据库管理系统（DBMS）使用锁管理器（LM）来控制事务何时可以访问数据项。锁管理器（LM）的基本思想是它维护一个关于活动事务当前持有的锁的内部数据结构。事务在访问数据项之前向 LM 发出锁请求，LM 将要么授予锁，要么阻塞事务直到锁可用，要么中止事务。 这个任务的核心是实现一个全局锁管理器 (Lock Manager, LM)，用于在事务访问数据时控制并发，通">
+<meta property="og:type" content="article">
 <meta property="og:title" content="CMU15-445(bustub):project4实现笔记">
 <meta property="og:url" content="http://example.com/2025/12/17/CMU15-445-bustub-project4%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="TARScn">
+<meta property="og:description" content="锁管理器为了确保事务操作的正确交错，数据库管理系统（DBMS）使用锁管理器（LM）来控制事务何时可以访问数据项。锁管理器（LM）的基本思想是它维护一个关于活动事务当前持有的锁的内部数据结构。事务在访问数据项之前向 LM 发出锁请求，LM 将要么授予锁，要么阻塞事务直到锁可用，要么中止事务。 这个任务的核心是实现一个全局锁管理器 (Lock Manager, LM)，用于在事务访问数据时控制并发，通">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project4%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/result1.png">
+<meta property="og:image" content="http://example.com/img/CMU15-445-Bustub-project4%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/result2.png">
 <meta property="article:published_time" content="2025-12-16T17:27:33.000Z">
-<meta property="article:modified_time" content="2025-12-19T09:52:33.053Z">
+<meta property="article:modified_time" content="2025-12-30T06:55:40.191Z">
 <meta property="article:author" content="Chengxiang">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="Bustub">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/CMU15-445-Bustub-project4%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/result1.png">
   
   
   
@@ -225,7 +232,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          3.4k 字
         
       </span>
     
@@ -236,7 +243,7 @@
         
         
         
-          1 分钟
+          29 分钟
         
       </span>
     
@@ -278,7 +285,231 @@
             
               <div class="markdown-body">
                 
-                
+                <h2 id="锁管理器"><a href="#锁管理器" class="headerlink" title="锁管理器"></a>锁管理器</h2><p>为了确保事务操作的正确交错，数据库管理系统（DBMS）使用<strong>锁管理器（LM）来控制事务何时可以访问数据项</strong>。锁管理器（LM）的基本思想是它维护一个关于活动事务当前持有的锁的内部数据结构。事务在访问数据项之前向 LM 发出锁请求，LM 将要么授予锁，要么阻塞事务直到锁可用，要么中止事务。</p>
+<p>这个任务的核心是实现一个全局锁管理器 (Lock Manager, LM)，用于在事务访问数据时控制并发，通过<strong>两阶段锁协议 (2PL)</strong> 保证事务的隔离性。</p>
+<h3 id="关键数据结构与状态"><a href="#关键数据结构与状态" class="headerlink" title="关键数据结构与状态"></a>关键数据结构与状态</h3><p>需要维护的数据主要位于 Transaction 类和 LockManager 类中。</p>
+<p><strong>A. 锁请求队列 (LockRequestQueue)</strong></p>
+<ul>
+<li><p>每个TableOID或RID都会映射到一个LockRequestQueue。</p>
+</li>
+<li><p>组成:</p>
+<ul>
+<li><p>std::list<LockRequest>: 等待或持有该资源锁的请求列表。</p>
+</li>
+<li><p>std::condition_variable: 用于唤醒被阻塞的事务。</p>
+</li>
+<li><p>核心逻辑: 当一个锁释放时，需要通过 CV 通知等待队列中的事务检查是否可以获取锁。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>B. 事务状态 (Transaction State)</strong></p>
+<p>在 Transaction 类中维护，LM 必须根据操作更新它：</p>
+<ul>
+<li><p>GROWING (增长阶段): 事务正在获取锁。</p>
+</li>
+<li><p>SHRINKING (收缩阶段): 事务释放了第一个锁之后进入此阶段（严格 2PL 下通常在 Commit&#x2F;Abort 时才释放，但不同隔离级别有区别）。</p>
+</li>
+<li><p>ABORTED: 发生非法锁操作时。</p>
+<ul>
+<li><p>注意: 如果非法操作，除了设为 ABORTED，还需抛出异常。</p>
+</li>
+<li><p>如果只是获取锁失败（如死锁），返回 false，不抛异常。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>C. 隔离级别行为 (Isolation Levels)</strong></p>
+<p>LM 的行为（能否加锁、何时解锁）取决于隔离级别：</p>
+<table>
+<thead>
+<tr>
+<th align="left">隔离级别</th>
+<th align="left">读锁 (S&#x2F;IS)</th>
+<th align="left">写锁 (X&#x2F;IX)</th>
+<th align="left">2PL 行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">REPEATABLE_READ</td>
+<td align="left">需要获取，直到事务结束</td>
+<td align="left">需要获取，直到事务结束</td>
+<td align="left">严格遵循 2PL (Growing -&gt; Shrinking)</td>
+</tr>
+<tr>
+<td align="left">READ_COMMITTED</td>
+<td align="left">需要获取，用完即放</td>
+<td align="left">需要获取，直到事务结束</td>
+<td align="left">读锁可能会提前释放 (打破严格 2PL)</td>
+</tr>
+<tr>
+<td align="left">READ_UNCOMMITTED</td>
+<td align="left">不需要获取</td>
+<td align="left">需要获取，直到事务结束</td>
+<td align="left">只加写锁，不加读锁</td>
+</tr>
+</tbody></table>
+<h3 id="需要实现的接口-API"><a href="#需要实现的接口-API" class="headerlink" title="需要实现的接口 (API)"></a>需要实现的接口 (API)</h3><p><strong>A. LockTable(Transaction, LockMode, TableOID)</strong></p>
+<ul>
+<li><p>作用: 申请表级锁。</p>
+</li>
+<li><p>逻辑:</p>
+</li>
+</ul>
+<ol>
+<li><p>检查合法性:</p>
+<ul>
+<li><p>如果是 READ_UNCOMMITTED 且申请 S&#x2F;IS&#x2F;SIX 锁 -&gt; Abort (RU 模式不加读锁)。</p>
+</li>
+<li><p>如果是 SHRINKING 阶段且申请锁 -&gt; Abort (违反 2PL)。</p>
+</li>
+<li><p>(特例: READ_COMMITTED 在 Shrinking 阶段能不能加锁？通常不能，除了某些特定的锁升级场景，需仔细看测试用例)。</p>
+</li>
+</ul>
+</li>
+<li><p>获取请求队列: 找到对应 TableOID 的队列。</p>
+</li>
+<li><p>锁升级 (Upgrade): 检查该事务是否已在该表持有锁。如果持有，判断是否需要升级 (例如 IS -&gt; S, S -&gt; X)。升级通常有优先级。</p>
+</li>
+<li><p>阻塞等待: 如果当前锁与队列中已有的锁不兼容，调用 cv.wait() 阻塞。</p>
+</li>
+<li><p>授予锁: 更新 request-&gt;granted_ &#x3D; true，更新事务的 lock_set。</p>
+</li>
+</ol>
+<p><strong>B. UnlockTable(Transaction, TableOID)</strong></p>
+<ul>
+<li><p>作用: 释放表级锁。</p>
+</li>
+<li><p>逻辑:</p>
+</li>
+</ul>
+<ol>
+<li><p>检查行锁: 只有当该表下的所有行锁都释放后，才能释放表锁（意向锁协议）。</p>
+</li>
+<li><p>更新阶段: 如果释放的是 X&#x2F;IX 锁（或者在 RR 模式下释放 S 锁），将事务状态从 GROWING 改为 SHRINKING。</p>
+</li>
+<li><p>清理: 从队列中移除请求，从事务 lock_set 中移除。</p>
+</li>
+<li><p>唤醒: 调用 cv.notify_all() 唤醒等待该表的其他事务。</p>
+</li>
+</ol>
+<p><strong>C. LockRow(Transaction, LockMode, TableOID, RID)</strong></p>
+<ul>
+<li><p>作用: 申请行级锁。</p>
+</li>
+<li><p>逻辑:</p>
+</li>
+</ul>
+<ol>
+<li><p>检查表锁: 事务必须先持有该表的意向锁 (IS&#x2F;IX&#x2F;SIX) 才能申请行锁。如果没有 -&gt; Abort。</p>
+</li>
+<li><p>其余逻辑: 类似 LockTable (检查 2PL 阶段，处理等待，处理升级)。</p>
+</li>
+</ol>
+<p><strong>D. UnlockRow(Transaction, TableOID, RID, force)</strong></p>
+<ul>
+<li><p>作用: 释放行级锁。</p>
+</li>
+<li><p>参数 force:</p>
+</li>
+</ul>
+<ol>
+<li><p>如果 force &#x3D;&#x3D; true: 忽略 2PL 规则检查，直接解锁，不改变事务状态（不进入 Shrinking）。这通常用于执行器只是“看一眼”元组但并不真的处理它的情况。</p>
+</li>
+<li><p>如果 force &#x3D;&#x3D; false: 正常逻辑，可能会触发生命周期状态变更 (Growing -&gt; Shrinking)。</p>
+</li>
+</ol>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><ol>
+<li><strong>核心数据结构设计</strong><br>锁管理器通过哈希表和队列来管理不同资源上的锁竞争。</li>
+</ol>
+<ul>
+<li><strong>分层结构：</strong><ul>
+<li>table_lock_map_：维护表级锁（OID -&gt; 锁请求队列）。</li>
+<li>row_lock_map_：维护行级锁（RID -&gt; 锁请求队列）。</li>
+</ul>
+</li>
+<li><strong>请求队列 (LockRequestQueue)：</strong><ul>
+<li>每个资源（表或行）都有一个队列。</li>
+<li>request_queue_：使用 std::list 存储等待或已持有的 LockRequest，通常遵循 FIFO (先进先出) 原则，但受兼容性限制。</li>
+<li>cv_ (Condition Variable)：核心同步机制。当锁被释放时，利用条件变量唤醒等待该资源的所有事务。</li>
+<li>upgrading_：专门用于记录当前正在尝试锁升级的事务 ID，防止多个事务同时升级导致死锁。</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li><p><strong>加锁逻辑 (LockTable &#x2F; LockRow)</strong><br>加锁的核心思想是 “检查-等待-授权” (Check-Wait-Grant) 模型。</p>
+<ol>
+<li><strong>预检查 (Pre-checks)：</strong><ul>
+<li><strong>离级别限制：</strong><ul>
+<li>READ_UNCOMMITTED 试图获取共享锁 (S&#x2F;IS&#x2F;SIX) 会直接抛出异常并 Abort。</li>
+<li>收缩阶段检查：如果事务处于 SHRINKING 阶段（即已经释放过锁），除了 READ_COMMITTED 下的特殊情况外，通常禁止再获取新锁（严格遵循 2PL）。</li>
+</ul>
+</li>
+<li><strong>层级约束 (LockRow 特有)</strong>：在 LockRow 中，必须调用 CheckAppropriateLockOnTable 确保事务已经持有了正确的表级意向锁，才能申请行锁。</li>
+</ul>
+</li>
+<li><strong>锁升级处理 (CheckLockUpdate…)：</strong><ul>
+<li>如果事务已持有该资源的锁，但请求更高级别的锁（例如从 S 升级到 X），代码会优先处理。</li>
+<li><strong>逻辑</strong>：释放旧锁 -&gt; 修改请求为新模式 -&gt; 插入到队列适当位置（通常保持优先级）-&gt; 尝试授权。</li>
+<li><strong>防死锁</strong>：利用 queue-&gt;upgrading_ 标记，同一资源同一时间只允许一个事务升级。</li>
+</ul>
+</li>
+<li><strong>等待与授权循环</strong>：<ul>
+<li>如果没有直接获得锁，请求被加入队列。</li>
+<li>使用 cv_.wait(lk, predicate) 进入阻塞等待。</li>
+<li><strong>Predicate (唤醒条件)</strong>：传入的 lambda 表达式会调用 GrantNewLocksIfPossible。只有当 request-&gt;granted_ 变为 true 时，事务才会被唤醒并继续执行。</li>
+<li><strong>GrantNewLocksIfPossible</strong>：这是调度的核心。它遍历队列，检查队首请求，并根据 兼容性矩阵 (AreLocksCompatible) 判断后续请求是否可以与当前持有者共存（例如多个 S 锁可以共存，但 X 锁必须独占）。</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p><strong>解锁逻辑 (UnlockTable &#x2F; UnlockRow)</strong><br>解锁的核心思想是 “状态流转与唤醒”。</p>
+<ol>
+<li><strong>状态流转 (2PL Phase Change)</strong>：<ul>
+<li>当释放锁时，代码根据隔离级别判断是否需要将事务状态从 GROWING 切换到 SHRINKING。</li>
+<li>例如：在 REPEATABLE_READ 下，一旦释放 S 或 X 锁，事务即进入收缩阶段，之后不能再加锁。</li>
+</ul>
+</li>
+<li><strong>强制解锁 (force 参数)</strong>：<ul>
+<li>UnlockRow 包含一个 force 参数。这通常用于执行器（Executor）层，当只需要“看一眼”数据（如做简单的过滤）而不需要持有锁直到事务结束时，可以强制解锁而不改变事务状态（不进入 Shrinking）。</li>
+</ul>
+</li>
+<li><strong>清理与通知</strong>：<ul>
+<li>从队列中移除请求。</li>
+<li>从事务的 lock_set 中移除记录。</li>
+<li><strong>关键步骤</strong>：调用 list-&gt;cv_.notify_all()。这会唤醒所有在 LockTable&#x2F;Row 中沉睡的线程，让它们重新竞争锁（通过 GrantNewLocksIfPossible 检查）。</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p><strong>死锁检测 (Deadlock Detection)</strong><br>代码中包含了一个后台线程 RunCycleDetection，其实现思想是 基于图的环检测。</p>
+<ol>
+<li><strong>构建等待图 (Waits-for Graph)</strong>：<ul>
+<li>遍历所有锁队列。</li>
+<li>如果事务 A 持有锁 (granted_ &#x3D; true)，事务 B 在等待锁 (granted_ &#x3D; false)，则添加一条边 B -&gt; A (B 等待 A)。</li>
+</ul>
+</li>
+<li><strong>环检测 (DFS)</strong>：<ul>
+<li>使用深度优先搜索 (Dfs) 查找图中是否存在环。</li>
+<li>如果存在环（例如 A 等 B，B 等 A），说明死锁。</li>
+</ul>
+</li>
+<li><strong>解除死锁</strong>：<ul>
+<li>策略是 “杀掉最年轻的事务”。</li>
+<li>HasCycle 会返回环中 txn_id 最大的事务（即最晚开始的事务）。</li>
+<li>调用 txn_manager_-&gt;Abort() 中止该事务，从而释放它持有的锁，打破环。</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><img src="/img/CMU15-445-Bustub-project4实现笔记/result1.png" srcset="/img/loading.gif" lazyload alt="测试结果1" style="display: block; margin: 0 auto; width: 70%; height:70%;">
+
+
+<img src="/img/CMU15-445-Bustub-project4实现笔记/result2.png" srcset="/img/loading.gif" lazyload alt="测试结果2" style="display: block; margin: 0 auto; width: 70%; height:70%;">
+
+
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br></pre></td><td class="code"><pre><code class="hljs routeros">$ ./bin/bustub-terrier-bench --duration 30000<br>x: create schema<br>Table created with id = 0<br>x: create index disabled<br>x: use insert + delete<br>x: benchmark <span class="hljs-keyword">for</span> 30000ms<br>x: <span class="hljs-attribute">nft_num</span>=10<br>x: initialize data<br>x: benchmark start<br>[ 1.01]   Verify: <span class="hljs-attribute">total_committed_txn</span>=12    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=11.9   <span class="hljs-attribute">avg_throughput</span>=11.9  <br>[ 1.01] Update 0: <span class="hljs-attribute">total_committed_txn</span>=4     <span class="hljs-attribute">total_aborted_txn</span>=10    <span class="hljs-attribute">throughput</span>=3.97   <span class="hljs-attribute">avg_throughput</span>=3.97  <br>[ 1.01] Update 1: <span class="hljs-attribute">total_committed_txn</span>=5     <span class="hljs-attribute">total_aborted_txn</span>=10    <span class="hljs-attribute">throughput</span>=4.97   <span class="hljs-attribute">avg_throughput</span>=4.97  <br>[ 1.01]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=14    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=13.9   <span class="hljs-attribute">avg_throughput</span>=13.9  <br>[ 1.01]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=14    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=13.9   <span class="hljs-attribute">avg_throughput</span>=13.9  <br>[ 2.01]   Verify: <span class="hljs-attribute">total_committed_txn</span>=22    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.9  <br>[ 2.01] Update 1: <span class="hljs-attribute">total_committed_txn</span>=5     <span class="hljs-attribute">total_aborted_txn</span>=20    <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=2.48  <br>[ 2.01] Update 0: <span class="hljs-attribute">total_committed_txn</span>=4     <span class="hljs-attribute">total_aborted_txn</span>=20    <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=1.99  <br>[ 2.01]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=24    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.94   <span class="hljs-attribute">avg_throughput</span>=11.9  <br>[ 2.01]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=24    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=11.9  <br>[ 3.02]   Verify: <span class="hljs-attribute">total_committed_txn</span>=32    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.6  <br>[ 3.02] Update 1: <span class="hljs-attribute">total_committed_txn</span>=5     <span class="hljs-attribute">total_aborted_txn</span>=30    <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=1.66  <br>[ 3.02]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=34    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=11.3  <br>[ 3.02] Update 0: <span class="hljs-attribute">total_committed_txn</span>=5     <span class="hljs-attribute">total_aborted_txn</span>=30    <span class="hljs-attribute">throughput</span>=0.992  <span class="hljs-attribute">avg_throughput</span>=1.65  <br>[ 3.02]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=34    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=11.3  <br>[ 4.03]   Verify: <span class="hljs-attribute">total_committed_txn</span>=42    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.4  <br>[ 4.03] Update 1: <span class="hljs-attribute">total_committed_txn</span>=5     <span class="hljs-attribute">total_aborted_txn</span>=40    <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=1.24  <br>[ 4.03]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=44    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10.9  <br>[ 4.03]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=44    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.9  <br>[ 4.03] Update 0: <span class="hljs-attribute">total_committed_txn</span>=6     <span class="hljs-attribute">total_aborted_txn</span>=40    <span class="hljs-attribute">throughput</span>=0.992  <span class="hljs-attribute">avg_throughput</span>=1.49  <br>[ 5.03]   Verify: <span class="hljs-attribute">total_committed_txn</span>=52    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.3  <br>[ 5.04] Update 0: <span class="hljs-attribute">total_committed_txn</span>=6     <span class="hljs-attribute">total_aborted_txn</span>=50    <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=1.19  <br>[ 5.04]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=54    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.7  <br>[ 5.04] Update 1: <span class="hljs-attribute">total_committed_txn</span>=6     <span class="hljs-attribute">total_aborted_txn</span>=50    <span class="hljs-attribute">throughput</span>=0.991  <span class="hljs-attribute">avg_throughput</span>=1.19  <br>[ 5.04]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=54    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10.7  <br>[ 6.04]   Verify: <span class="hljs-attribute">total_committed_txn</span>=62    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.3  <br>[ 6.04] Update 1: <span class="hljs-attribute">total_committed_txn</span>=7     <span class="hljs-attribute">total_aborted_txn</span>=60    <span class="hljs-attribute">throughput</span>=0.995  <span class="hljs-attribute">avg_throughput</span>=1.16  <br>[ 6.04] Update 0: <span class="hljs-attribute">total_committed_txn</span>=6     <span class="hljs-attribute">total_aborted_txn</span>=60    <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.993 <br>[ 6.04]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=64    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.94   <span class="hljs-attribute">avg_throughput</span>=10.6  <br>[ 6.04]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=64    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.6  <br>[ 7.05]   Verify: <span class="hljs-attribute">total_committed_txn</span>=72    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[ 7.05] Update 1: <span class="hljs-attribute">total_committed_txn</span>=7     <span class="hljs-attribute">total_aborted_txn</span>=70    <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.993 <br>[ 7.05] Update 0: <span class="hljs-attribute">total_committed_txn</span>=6     <span class="hljs-attribute">total_aborted_txn</span>=70    <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.851 <br>[ 7.05]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=74    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.94   <span class="hljs-attribute">avg_throughput</span>=10.5  <br>[ 7.05]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=74    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.5  <br>[ 8.05]   Verify: <span class="hljs-attribute">total_committed_txn</span>=82    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[ 8.06] Update 1: <span class="hljs-attribute">total_committed_txn</span>=7     <span class="hljs-attribute">total_aborted_txn</span>=80    <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.869 <br>[ 8.06] Update 0: <span class="hljs-attribute">total_committed_txn</span>=6     <span class="hljs-attribute">total_aborted_txn</span>=80    <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.745 <br>[ 8.06]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=84    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.4  <br>[ 8.06]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=84    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10.4  <br>[ 9.06]   Verify: <span class="hljs-attribute">total_committed_txn</span>=92    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[ 9.06] Update 0: <span class="hljs-attribute">total_committed_txn</span>=6     <span class="hljs-attribute">total_aborted_txn</span>=90    <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.662 <br>[ 9.06]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=94    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.94   <span class="hljs-attribute">avg_throughput</span>=10.4  <br>[ 9.06] Update 1: <span class="hljs-attribute">total_committed_txn</span>=8     <span class="hljs-attribute">total_aborted_txn</span>=90    <span class="hljs-attribute">throughput</span>=0.992  <span class="hljs-attribute">avg_throughput</span>=0.883 <br>[ 9.06]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=94    <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.4  <br>[10.07]   Verify: <span class="hljs-attribute">total_committed_txn</span>=102   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.1  <br>[10.07] Update 1: <span class="hljs-attribute">total_committed_txn</span>=8     <span class="hljs-attribute">total_aborted_txn</span>=100   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.794 <br>[10.07] Update 0: <span class="hljs-attribute">total_committed_txn</span>=6     <span class="hljs-attribute">total_aborted_txn</span>=100   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.596 <br>[10.07]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=104   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10.3  <br>[10.07]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=104   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.3  <br>[11.07]   Verify: <span class="hljs-attribute">total_committed_txn</span>=112   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.94   <span class="hljs-attribute">avg_throughput</span>=10.1  <br>[11.08] Update 0: <span class="hljs-attribute">total_committed_txn</span>=6     <span class="hljs-attribute">total_aborted_txn</span>=110   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.542 <br>[11.08]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=114   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.95   <span class="hljs-attribute">avg_throughput</span>=10.3  <br>[11.08] Update 1: <span class="hljs-attribute">total_committed_txn</span>=9     <span class="hljs-attribute">total_aborted_txn</span>=110   <span class="hljs-attribute">throughput</span>=0.993  <span class="hljs-attribute">avg_throughput</span>=0.812 <br>[11.08]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=114   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.94   <span class="hljs-attribute">avg_throughput</span>=10.3  <br>[12.08]   Verify: <span class="hljs-attribute">total_committed_txn</span>=122   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.1  <br>[12.08] Update 0: <span class="hljs-attribute">total_committed_txn</span>=6     <span class="hljs-attribute">total_aborted_txn</span>=120   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.497 <br>[12.08]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=124   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.94   <span class="hljs-attribute">avg_throughput</span>=10.3  <br>[12.08] Update 1: <span class="hljs-attribute">total_committed_txn</span>=9     <span class="hljs-attribute">total_aborted_txn</span>=120   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.745 <br>[12.08]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=124   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.3  <br>[13.09]   Verify: <span class="hljs-attribute">total_committed_txn</span>=132   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.1  <br>[13.09] Update 0: <span class="hljs-attribute">total_committed_txn</span>=6     <span class="hljs-attribute">total_aborted_txn</span>=130   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.458 <br>[13.09] Update 1: <span class="hljs-attribute">total_committed_txn</span>=9     <span class="hljs-attribute">total_aborted_txn</span>=130   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.688 <br>[13.09]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=134   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[13.09]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=134   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.94   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[14.09]   Verify: <span class="hljs-attribute">total_committed_txn</span>=142   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.95   <span class="hljs-attribute">avg_throughput</span>=10.1  <br>[14.10] Update 1: <span class="hljs-attribute">total_committed_txn</span>=9     <span class="hljs-attribute">total_aborted_txn</span>=140   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.639 <br>[14.10] Update 0: <span class="hljs-attribute">total_committed_txn</span>=8     <span class="hljs-attribute">total_aborted_txn</span>=140   <span class="hljs-attribute">throughput</span>=1.99   <span class="hljs-attribute">avg_throughput</span>=0.568 <br>[14.10]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=144   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.95   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[14.10]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=144   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.94   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[15.10]   Verify: <span class="hljs-attribute">total_committed_txn</span>=152   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.1  <br>[15.10] Update 0: <span class="hljs-attribute">total_committed_txn</span>=9     <span class="hljs-attribute">total_aborted_txn</span>=150   <span class="hljs-attribute">throughput</span>=0.993  <span class="hljs-attribute">avg_throughput</span>=0.596 <br>[15.10]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=154   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[15.10] Update 1: <span class="hljs-attribute">total_committed_txn</span>=11    <span class="hljs-attribute">total_aborted_txn</span>=150   <span class="hljs-attribute">throughput</span>=1.98   <span class="hljs-attribute">avg_throughput</span>=0.728 <br>[15.10]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=154   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[16.11]   Verify: <span class="hljs-attribute">total_committed_txn</span>=162   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10.1  <br>[16.11] Update 1: <span class="hljs-attribute">total_committed_txn</span>=13    <span class="hljs-attribute">total_aborted_txn</span>=160   <span class="hljs-attribute">throughput</span>=1.99   <span class="hljs-attribute">avg_throughput</span>=0.807 <br>[16.11]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=165   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=10.9   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[16.11] Update 0: <span class="hljs-attribute">total_committed_txn</span>=11    <span class="hljs-attribute">total_aborted_txn</span>=160   <span class="hljs-attribute">throughput</span>=1.98   <span class="hljs-attribute">avg_throughput</span>=0.683 <br>[16.11]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=165   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=10.9   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[17.12]   Verify: <span class="hljs-attribute">total_committed_txn</span>=172   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10    <br>[17.12] Update 1: <span class="hljs-attribute">total_committed_txn</span>=13    <span class="hljs-attribute">total_aborted_txn</span>=170   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.759 <br>[17.12] Update 0: <span class="hljs-attribute">total_committed_txn</span>=11    <span class="hljs-attribute">total_aborted_txn</span>=170   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.643 <br>[17.12]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=175   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[17.12]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=175   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.9    <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[18.12]   Verify: <span class="hljs-attribute">total_committed_txn</span>=182   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10    <br>[18.13] Update 1: <span class="hljs-attribute">total_committed_txn</span>=13    <span class="hljs-attribute">total_aborted_txn</span>=180   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.717 <br>[18.13] Update 0: <span class="hljs-attribute">total_committed_txn</span>=11    <span class="hljs-attribute">total_aborted_txn</span>=180   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.607 <br>[18.13]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=185   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.91   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[18.13]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=185   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[19.13]   Verify: <span class="hljs-attribute">total_committed_txn</span>=192   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.94   <span class="hljs-attribute">avg_throughput</span>=10    <br>[19.13] Update 1: <span class="hljs-attribute">total_committed_txn</span>=14    <span class="hljs-attribute">total_aborted_txn</span>=190   <span class="hljs-attribute">throughput</span>=0.995  <span class="hljs-attribute">avg_throughput</span>=0.732 <br>[19.13]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=195   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.96   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[19.13] Update 0: <span class="hljs-attribute">total_committed_txn</span>=12    <span class="hljs-attribute">total_aborted_txn</span>=190   <span class="hljs-attribute">throughput</span>=0.994  <span class="hljs-attribute">avg_throughput</span>=0.627 <br>[19.13]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=196   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=10.9   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[20.14]   Verify: <span class="hljs-attribute">total_committed_txn</span>=202   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10    <br>[20.14] Update 1: <span class="hljs-attribute">total_committed_txn</span>=14    <span class="hljs-attribute">total_aborted_txn</span>=200   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.695 <br>[20.14]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=205   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[20.14] Update 0: <span class="hljs-attribute">total_committed_txn</span>=12    <span class="hljs-attribute">total_aborted_txn</span>=200   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.596 <br>[20.14]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=206   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.91   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[21.15]   Verify: <span class="hljs-attribute">total_committed_txn</span>=212   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.91   <span class="hljs-attribute">avg_throughput</span>=10    <br>[21.15] Update 1: <span class="hljs-attribute">total_committed_txn</span>=15    <span class="hljs-attribute">total_aborted_txn</span>=210   <span class="hljs-attribute">throughput</span>=0.991  <span class="hljs-attribute">avg_throughput</span>=0.709 <br>[21.15] Update 0: <span class="hljs-attribute">total_committed_txn</span>=13    <span class="hljs-attribute">total_aborted_txn</span>=210   <span class="hljs-attribute">throughput</span>=0.992  <span class="hljs-attribute">avg_throughput</span>=0.615 <br>[21.15]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=216   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=10.9   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[21.15]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=216   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[22.16]   Verify: <span class="hljs-attribute">total_committed_txn</span>=222   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.91   <span class="hljs-attribute">avg_throughput</span>=10    <br>[22.16] Update 1: <span class="hljs-attribute">total_committed_txn</span>=15    <span class="hljs-attribute">total_aborted_txn</span>=220   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.677 <br>[22.16] Update 0: <span class="hljs-attribute">total_committed_txn</span>=14    <span class="hljs-attribute">total_aborted_txn</span>=220   <span class="hljs-attribute">throughput</span>=0.991  <span class="hljs-attribute">avg_throughput</span>=0.632 <br>[22.16]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=226   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.91   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[22.16]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=226   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.91   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[23.17]   Verify: <span class="hljs-attribute">total_committed_txn</span>=232   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.89   <span class="hljs-attribute">avg_throughput</span>=10    <br>[23.17] Update 0: <span class="hljs-attribute">total_committed_txn</span>=15    <span class="hljs-attribute">total_aborted_txn</span>=230   <span class="hljs-attribute">throughput</span>=0.989  <span class="hljs-attribute">avg_throughput</span>=0.647 <br>[23.17] Update 1: <span class="hljs-attribute">total_committed_txn</span>=16    <span class="hljs-attribute">total_aborted_txn</span>=230   <span class="hljs-attribute">throughput</span>=0.989  <span class="hljs-attribute">avg_throughput</span>=0.691 <br>[23.17]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=236   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.89   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[23.17]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=236   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.89   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[24.18]   Verify: <span class="hljs-attribute">total_committed_txn</span>=242   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.9    <span class="hljs-attribute">avg_throughput</span>=10    <br>[24.18] Update 0: <span class="hljs-attribute">total_committed_txn</span>=15    <span class="hljs-attribute">total_aborted_txn</span>=240   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.62  <br>[24.18] Update 1: <span class="hljs-attribute">total_committed_txn</span>=16    <span class="hljs-attribute">total_aborted_txn</span>=240   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.662 <br>[24.18]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=246   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.91   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[24.18]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=246   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.89   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[25.19]   Verify: <span class="hljs-attribute">total_committed_txn</span>=252   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.92   <span class="hljs-attribute">avg_throughput</span>=10    <br>[25.19] Update 1: <span class="hljs-attribute">total_committed_txn</span>=16    <span class="hljs-attribute">total_aborted_txn</span>=250   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.635 <br>[25.19] Update 0: <span class="hljs-attribute">total_committed_txn</span>=15    <span class="hljs-attribute">total_aborted_txn</span>=250   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.596 <br>[25.19]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=256   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.93   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[25.19]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=256   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.91   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[26.20]   Verify: <span class="hljs-attribute">total_committed_txn</span>=262   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.9    <span class="hljs-attribute">avg_throughput</span>=10    <br>[26.20] Update 0: <span class="hljs-attribute">total_committed_txn</span>=16    <span class="hljs-attribute">total_aborted_txn</span>=260   <span class="hljs-attribute">throughput</span>=0.991  <span class="hljs-attribute">avg_throughput</span>=0.611 <br>[26.20] Update 1: <span class="hljs-attribute">total_committed_txn</span>=17    <span class="hljs-attribute">total_aborted_txn</span>=260   <span class="hljs-attribute">throughput</span>=0.991  <span class="hljs-attribute">avg_throughput</span>=0.649 <br>[26.20]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=266   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.91   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[26.20]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=266   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.9    <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[27.21]   Verify: <span class="hljs-attribute">total_committed_txn</span>=272   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.9    <span class="hljs-attribute">avg_throughput</span>=10    <br>[27.21] Update 0: <span class="hljs-attribute">total_committed_txn</span>=18    <span class="hljs-attribute">total_aborted_txn</span>=270   <span class="hljs-attribute">throughput</span>=1.98   <span class="hljs-attribute">avg_throughput</span>=0.662 <br>[27.21] Update 1: <span class="hljs-attribute">total_committed_txn</span>=19    <span class="hljs-attribute">total_aborted_txn</span>=270   <span class="hljs-attribute">throughput</span>=1.98   <span class="hljs-attribute">avg_throughput</span>=0.698 <br>[27.21]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=276   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.89   <span class="hljs-attribute">avg_throughput</span>=10.1  <br>[27.21]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=277   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=10.9   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[28.22]   Verify: <span class="hljs-attribute">total_committed_txn</span>=282   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.9    <span class="hljs-attribute">avg_throughput</span>=9.99  <br>[28.22] Update 1: <span class="hljs-attribute">total_committed_txn</span>=21    <span class="hljs-attribute">total_aborted_txn</span>=280   <span class="hljs-attribute">throughput</span>=1.98   <span class="hljs-attribute">avg_throughput</span>=0.744 <br>[28.22] Update 0: <span class="hljs-attribute">total_committed_txn</span>=22    <span class="hljs-attribute">total_aborted_txn</span>=280   <span class="hljs-attribute">throughput</span>=3.96   <span class="hljs-attribute">avg_throughput</span>=0.78  <br>[28.22]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=287   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.9    <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[28.22]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=287   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=10.9   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[29.23]   Verify: <span class="hljs-attribute">total_committed_txn</span>=292   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.89   <span class="hljs-attribute">avg_throughput</span>=9.99  <br>[29.23] Update 0: <span class="hljs-attribute">total_committed_txn</span>=23    <span class="hljs-attribute">total_aborted_txn</span>=290   <span class="hljs-attribute">throughput</span>=0.99   <span class="hljs-attribute">avg_throughput</span>=0.787 <br>[29.23] Update 1: <span class="hljs-attribute">total_committed_txn</span>=21    <span class="hljs-attribute">total_aborted_txn</span>=290   <span class="hljs-attribute">throughput</span>=0      <span class="hljs-attribute">avg_throughput</span>=0.718 <br>[29.23]  Count 1: <span class="hljs-attribute">total_committed_txn</span>=297   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.9    <span class="hljs-attribute">avg_throughput</span>=10.2  <br>[29.23]  Count 0: <span class="hljs-attribute">total_committed_txn</span>=297   <span class="hljs-attribute">total_aborted_txn</span>=0     <span class="hljs-attribute">throughput</span>=9.89   <span class="hljs-attribute">avg_throughput</span>=10.2  <br>SELECT count(*) <span class="hljs-keyword">FROM</span> nft WHERE terrier = 0: 0<br>&lt;&lt;&lt; BEGIN<br>update: 1.4622798271851114<br>count: 20.272515785975408<br>verify: 9.970089730807578<br>&gt;&gt;&gt; END<br></code></pre></td></tr></table></figure>
                 
               </div>
             
@@ -286,6 +517,36 @@
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/CMU15-445/" class="category-chain-item">CMU15-445</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="print-no-link">#数据库</a>
+      
+        <a href="/tags/Bustub/" class="print-no-link">#Bustub</a>
+      
+    </div>
   
 </div>
 
@@ -359,6 +620,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -551,6 +818,49 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
