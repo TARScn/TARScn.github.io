@@ -1,0 +1,1223 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Chengxiang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="关系模型SQL 的全称是 Structured Query Language，翻译为中文即 “结构化查询语言”。 关系模型就是用“表格”来组织数据，并利用数学（集合论和谓词逻辑）来处理数据之间的联系。 核心概念：什么是“关系”？在关系模型中，“关系”（Relation） 实际上就是我们俗称的 “表”（Table）。  元组（Tuple）： 表中的每一行。它代表了一个具体的数据实体（例如：一个特定的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL笔记">
+<meta property="og:url" content="http://example.com/2026/01/04/SQL%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="TARScn">
+<meta property="og:description" content="关系模型SQL 的全称是 Structured Query Language，翻译为中文即 “结构化查询语言”。 关系模型就是用“表格”来组织数据，并利用数学（集合论和谓词逻辑）来处理数据之间的联系。 核心概念：什么是“关系”？在关系模型中，“关系”（Relation） 实际上就是我们俗称的 “表”（Table）。  元组（Tuple）： 表中的每一行。它代表了一个具体的数据实体（例如：一个特定的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/SQL%E7%AC%94%E8%AE%B0/JOIN.png">
+<meta property="article:published_time" content="2026-01-04T12:18:45.000Z">
+<meta property="article:modified_time" content="2026-01-04T13:57:29.520Z">
+<meta property="article:author" content="Chengxiang">
+<meta property="article:tag" content="SQL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/SQL%E7%AC%94%E8%AE%B0/JOIN.png">
+  
+  
+  
+  <title>SQL笔记 - TARScn</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>TARScn</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="SQL笔记"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Chengxiang
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-01-04 20:18" pubdate>
+          2026年1月4日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          40 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">SQL笔记</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="关系模型"><a href="#关系模型" class="headerlink" title="关系模型"></a>关系模型</h1><p>SQL 的全称是 <strong>Structured Query Language</strong>，翻译为中文即 <strong>“结构化查询语言”</strong>。</p>
+<p>关系模型就是<strong>用“表格”来组织数据</strong>，并利用数学（集合论和谓词逻辑）来处理数据之间的联系。</p>
+<h2 id="核心概念：什么是“关系”？"><a href="#核心概念：什么是“关系”？" class="headerlink" title="核心概念：什么是“关系”？"></a>核心概念：什么是“关系”？</h2><p>在关系模型中，<strong>“关系”（Relation）</strong> 实际上就是我们俗称的 <strong>“表”（Table）</strong>。</p>
+<ul>
+<li><p><strong>元组（Tuple）：</strong> 表中的<strong>每一行</strong>。<strong>它代表了一个具体的数据实体</strong>（例如：一个特定的员工）。</p>
+</li>
+<li><p><strong>属性（Attribute）：</strong> 表中的<strong>每一列</strong>。<strong>它代表了实体的一个特征</strong>（例如：姓名、年龄）。</p>
+</li>
+<li><p><strong>域（Domain）：</strong> 属性的取值范围（例如：年龄必须是正整数）。</p>
+</li>
+</ul>
+<p>为了让你直观地理解这些概念，我们设计一个简单的场景：<strong>“学校选课系统”</strong>。这个系统包含两张表：<strong>学生表 (Students)</strong> 和 <strong>班级表 (Classes)</strong>。</p>
+<p><strong>学生表 (Students)</strong> </p>
+<table>
+<thead>
+<tr>
+<th align="left">学生ID (主键)</th>
+<th align="left">姓名</th>
+<th align="left">年龄</th>
+<th align="left">班级ID (外键)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">101</td>
+<td align="left">张三</td>
+<td align="left">20</td>
+<td align="left">C01</td>
+</tr>
+<tr>
+<td align="left">102</td>
+<td align="left">李四</td>
+<td align="left">21</td>
+<td align="left">C02</td>
+</tr>
+<tr>
+<td align="left">103</td>
+<td align="left">王五</td>
+<td align="left">20</td>
+<td align="left">C01</td>
+</tr>
+</tbody></table>
+<p><strong>班级表 (Classes)</strong> </p>
+<table>
+<thead>
+<tr>
+<th align="left">班级ID (主键)</th>
+<th align="left">班级名称</th>
+<th align="left">教室</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">C01</td>
+<td align="left">计算机一班</td>
+<td align="left">实验楼301</td>
+</tr>
+<tr>
+<td align="left">C02</td>
+<td align="left">物理二班</td>
+<td align="left">教学楼102</td>
+</tr>
+</tbody></table>
+<h2 id="主键-Primary-Key-PK"><a href="#主键-Primary-Key-PK" class="headerlink" title="主键 (Primary Key, PK)"></a>主键 (Primary Key, PK)</h2><ul>
+<li><p><strong>概念：</strong> 表中每一行记录的<strong>唯一标识符</strong>。就像我们的身份证号。</p>
+</li>
+<li><p><strong>作用：</strong></p>
+<ul>
+<li><p><strong>唯一性：</strong> 保证表中没有重复的行。</p>
+</li>
+<li><p><strong>非空性：</strong> 主键列绝对不能为空值（NULL）。</p>
+</li>
+<li><p><strong>快速定位：</strong> 数据库引擎通过主键可以瞬间找到对应的特定行。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>例子：</strong> 在“学生表”中，<code>学生ID</code> 是主键。即使有两个学生都叫“张三”，只要 ID 不同，数据库就能区分他们。</p>
+</li>
+</ul>
+<h2 id="外键-Foreign-Key-FK"><a href="#外键-Foreign-Key-FK" class="headerlink" title="外键 (Foreign Key, FK)"></a>外键 (Foreign Key, FK)</h2><ul>
+<li><p><strong>概念：</strong> 用于<strong>在两个表之间建立连接的字段</strong>。它通常指向另一个表的主键。</p>
+</li>
+<li><p><strong>作用：</strong></p>
+<ul>
+<li><p><strong>建立联系：</strong> 将分散在不同表中的数据关联起来。</p>
+</li>
+<li><p><strong>数据完整性：</strong> 确保引用的有效性。例如，如果你在“学生表”里填了一个班级 ID 为 <code>C99</code>，但“班级表”里根本没有这个班，数据库会报错拒绝插入。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>例子：</strong> “学生表”中的 <code>班级ID</code> 是外键，它指向了“班级表”的主键。这表明张三属于“计算机一班”。</p>
+</li>
+</ul>
+<h2 id="索引-Index"><a href="#索引-Index" class="headerlink" title="索引 (Index)"></a>索引 (Index)</h2><ul>
+<li><p><strong>概念：</strong> 索引好比一本书前面的 <strong>“目录”</strong>。它是一种特殊的数据结构（通常是 B+ 树）。</p>
+</li>
+<li><p><strong>作用：</strong></p>
+<ul>
+<li><p><strong>极大提高查询速度：</strong> 如果没有索引，数据库必须“全表扫描”（从第一行查到最后一行）。有了索引，数据库可以直接跳转到数据所在的位置。</p>
+</li>
+<li><p><strong>缺点：</strong> 索引会占用额外的磁盘空间，并且在插入或更新数据时，数据库还需要维护索引，因此会稍微降低“写”的速度。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>例子：</strong> 如果学生表有 100 万行，你想按<code>姓名</code>找“王五”。</p>
+<ul>
+<li><p><strong>无索引：</strong> 数据库要查 100 万次。</p>
+</li>
+<li><p><strong>有索引（在姓名列上）：</strong> 数据库通过目录，可能只需要几次定位就能找到“王五”。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><table>
+<thead>
+<tr>
+<th><strong>概念</strong></th>
+<th><strong>类比</strong></th>
+<th><strong>核心价值</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>主键</strong></td>
+<td>身份证号</td>
+<td>区分你我（唯一性）</td>
+</tr>
+<tr>
+<td><strong>外键</strong></td>
+<td>员工证上的部门编号</td>
+<td>确定所属关系（一致性）</td>
+</tr>
+<tr>
+<td><strong>索引</strong></td>
+<td>书本目录</td>
+<td>快速翻到指定页码（速度）</td>
+</tr>
+</tbody></table>
+<h1 id="查询数据"><a href="#查询数据" class="headerlink" title="查询数据"></a>查询数据</h1><p>在关系数据库中，最常用的操作就是查询。</p>
+<h3 id="准备数据"><a href="#准备数据" class="headerlink" title="准备数据"></a>准备数据</h3><p>为了便于讲解和练习，我们先准备好了一个<code>students</code>表和一个<code>classes</code>表，它们的结构和数据如下：</p>
+<p><code>students</code>表存储了学生信息：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>class_id</th>
+<th>name</th>
+<th>gender</th>
+<th>score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>1</td>
+<td>小明</td>
+<td>M</td>
+<td>90</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1</td>
+<td>小红</td>
+<td>F</td>
+<td>95</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1</td>
+<td>小军</td>
+<td>M</td>
+<td>88</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1</td>
+<td>小米</td>
+<td>F</td>
+<td>73</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2</td>
+<td>小白</td>
+<td>F</td>
+<td>81</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2</td>
+<td>小兵</td>
+<td>M</td>
+<td>55</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2</td>
+<td>小林</td>
+<td>M</td>
+<td>85</td>
+</tr>
+<tr>
+<td>8</td>
+<td>3</td>
+<td>小新</td>
+<td>F</td>
+<td>91</td>
+</tr>
+<tr>
+<td>9</td>
+<td>3</td>
+<td>小王</td>
+<td>M</td>
+<td>89</td>
+</tr>
+<tr>
+<td>10</td>
+<td>3</td>
+<td>小丽</td>
+<td>F</td>
+<td>85</td>
+</tr>
+</tbody></table>
+<p><code>classes</code>表存储了班级信息：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>一班</td>
+</tr>
+<tr>
+<td>2</td>
+<td>二班</td>
+</tr>
+<tr>
+<td>3</td>
+<td>三班</td>
+</tr>
+<tr>
+<td>4</td>
+<td>四班</td>
+</tr>
+</tbody></table>
+<h2 id="基本查询"><a href="#基本查询" class="headerlink" title="基本查询"></a>基本查询</h2><p>要查询数据库表的数据，我们使用如下的SQL语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> <span class="hljs-operator">&lt;</span>表名<span class="hljs-operator">&gt;</span><br></code></pre></td></tr></table></figure>
+<p>使用<code>SELECT * FROM students</code>时，<code>SELECT</code>是关键字，表示将要执行一个查询，<code>*</code>表示“所有列”，<code>FROM</code>表示将要从哪个表查询，本例中是<code>students</code>表。</p>
+<p>该SQL将查询出<code>students</code>表的所有数据。</p>
+<h2 id="条件查询"><a href="#条件查询" class="headerlink" title="条件查询"></a>条件查询</h2><p>使用<code>SELECT * FROM &lt;表名&gt;</code>可以查询到一张表的所有记录。但是，很多时候，我们并不希望获得所有记录，而是根据条件选择性地获取指定条件的记录，例如，查询分数在80分以上的学生记录。在一张表有数百万记录的情况下，获取所有记录不仅费时，还费内存和网络带宽。</p>
+<p><code>SELECT</code> 语句可以通过<code>WHERE</code>条件来设定查询条件，查询结果是满足查询条件的记录。例如，要指定条件“分数在80分或以上的学生”，写成<code>WHERE</code>条件就是<code>SELECT * FROM students WHERE score &gt;= 80</code>。</p>
+<p>其中，<code>WHERE</code>关键字后面的<code>score &gt;= 80</code>就是条件。<code>score</code>是列名，该列存储了学生的成绩，因此，<code>score &gt;= 80</code>就筛选出了指定条件的记录：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> students <span class="hljs-keyword">WHERE</span> score <span class="hljs-operator">&gt;=</span> <span class="hljs-number">80</span>;<br></code></pre></td></tr></table></figure>
+
+<p>因此，条件查询的语法就是：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> <span class="hljs-operator">&lt;</span>表名<span class="hljs-operator">&gt;</span> <span class="hljs-keyword">WHERE</span> <span class="hljs-operator">&lt;</span>条件表达式<span class="hljs-operator">&gt;</span><br></code></pre></td></tr></table></figure>
+<hr>
+<ol>
+<li><strong>AND</strong><br>条件表达式可以用<code>&lt;条件1&gt; AND &lt;条件2&gt;</code>表达满足条件1并且满足条件2。例如，符合条件“分数在80分或以上”，并且还符合条件“男生”，把这两个条件写出来：</li>
+</ol>
+<ul>
+<li>条件1：根据score列的数据判断：<code>score &gt;= 80</code>；</li>
+<li>条件2：根据gender列的数据判断：<code>gender = &#39;M&#39;</code>，注意<code>gender</code>列存储的是字符串，需要用单引号括起来。</li>
+</ul>
+<p>就可以写出<code>WHERE</code>条件：<code>score &gt;= 80 AND gender = &#39;M&#39;</code></p>
+<hr>
+<ol start="2">
+<li><strong>OR</strong><br>第二种条件是<code>&lt;条件1&gt; OR &lt;条件2&gt;</code>，<strong>表示满足条件1或者满足条件2</strong>。例如，把上述<code>AND</code>查询的两个条件改为<code>OR</code>，查询结果就是“分数在80分或以上”或者“男生”，满足任意之一的条件即选出该记录：<code>SELECT * FROM students WHERE score &gt;= 80 OR gender = &#39;M&#39;;</code></li>
+</ol>
+<hr>
+<ol>
+<li><strong>NOT</strong><br>第三种条件是<code>NOT &lt;条件&gt;</code>，<strong>表示“不符合该条件”的记录</strong>。例如，写一个“不是2班的学生”这个条件，可以先写出“是2班的学生”：<code>class_id = 2</code>，再加上<code>NOT</code>：<code>NOT class_id = 2</code>：<code>SELECT * FROM students WHERE NOT class_id = 2;</code></li>
+</ol>
+<hr>
+<ol start="4">
+<li><strong>IN</strong><br><code>IN</code> 操作符用来指定条件范围，范围中的每个条件都可以进行匹配。<code>IN</code> 取一组由逗号分隔、括在圆括号中的合法值。下面的例子说明了这个操作符。</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> students <br><span class="hljs-keyword">WHERE</span> id <span class="hljs-keyword">IN</span> (<span class="hljs-number">1</span>,<span class="hljs-number">4</span>);<br></code></pre></td></tr></table></figure>
+<p><strong>查询结果：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">id</th>
+<th align="left">class_id</th>
+<th align="left">name</th>
+<th align="left">gender</th>
+<th align="left">score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>1</strong></td>
+<td align="left">1</td>
+<td align="left">小明</td>
+<td align="left">M</td>
+<td align="left">90</td>
+</tr>
+<tr>
+<td align="left"><strong>4</strong></td>
+<td align="left">1</td>
+<td align="left">小米</td>
+<td align="left">F</td>
+<td align="left">73</td>
+</tr>
+</tbody></table>
+<p><strong>注意</strong>，<code>IN</code>操作符后跟由逗号分隔的合法值，<strong>这些值必须括在圆括号中</strong>。</p>
+<hr>
+<h3 id="常用的条件表达式"><a href="#常用的条件表达式" class="headerlink" title="常用的条件表达式"></a>常用的条件表达式</h3><table>
+<thead>
+<tr>
+<th>条件</th>
+<th>表达式举例1</th>
+<th>表达式举例2</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>使用&#x3D;判断相等</td>
+<td>score &#x3D; 80</td>
+<td>name &#x3D; ‘abc’</td>
+<td>字符串需要用单引号括起来</td>
+</tr>
+<tr>
+<td>使用&gt;判断大于</td>
+<td>score &gt; 80</td>
+<td>name &gt; ‘abc’</td>
+<td>字符串比较根据ASCII码，中文字符比较根据数据库设置</td>
+</tr>
+<tr>
+<td>使用&gt;&#x3D;判断大于或相等</td>
+<td>score &gt;&#x3D; 80</td>
+<td>name &gt;&#x3D; ‘abc’</td>
+<td></td>
+</tr>
+<tr>
+<td>使用&lt;判断小于</td>
+<td>score &lt; 80</td>
+<td>name &lt;&#x3D; ‘abc’</td>
+<td></td>
+</tr>
+<tr>
+<td>使用&lt;&#x3D;判断小于或相等</td>
+<td>score &lt;&#x3D; 80</td>
+<td>name &lt;&#x3D; ‘abc’</td>
+<td></td>
+</tr>
+<tr>
+<td>使用&lt;&gt;判断不相等</td>
+<td>score &lt;&gt; 80</td>
+<td>name &lt;&gt; ‘abc’</td>
+<td></td>
+</tr>
+<tr>
+<td>使用LIKE判断相似</td>
+<td>name LIKE ‘ab%’</td>
+<td>name LIKE ‘%bc%’</td>
+<td>%表示任意字符，例如’ab%’将匹配’ab’，’abc’，’abcd’</td>
+</tr>
+</tbody></table>
+<h2 id="投影查询"><a href="#投影查询" class="headerlink" title="投影查询"></a>投影查询</h2><p>使用<code>SELECT * FROM &lt;表名&gt; WHERE &lt;条件&gt;</code>可以选出表中的若干条记录。我们注意到返回的二维表结构和原表是相同的，即结果集的所有列与原表的所有列都一一对应。</p>
+<p>如果我们只希望返回某些列的数据，而不是所有列的数据，我们可以用<code>SELECT 列1, 列2, 列3 FROM ...</code>，让结果集仅包含指定列。这种操作称为<strong>投影查询</strong>。</p>
+<p>例如，从students表中返回id、score和name这三列：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> id, score, name <span class="hljs-keyword">FROM</span> students;<br></code></pre></td></tr></table></figure>
+
+<p>这样返回的结果集就只包含了我们指定的列，并且，结果集的列的顺序和原表可以不一样。</p>
+<p>使用<code>SELECT 列1, 列2, 列3 FROM ...</code>时，还可以给每一列起个别名，这样，结果集的列名就可以与原表的列名不同。它的语法是<code>SELECT 列1 AS 别名1, 列2 AS 别名2, 列3 AS 别名3 FROM ...</code>。</p>
+<p>例如，以下SELECT语句将列名score重命名为points，而id和name列名保持不变：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> id, score <span class="hljs-keyword">AS</span> points, name <span class="hljs-keyword">FROM</span> students;<br></code></pre></td></tr></table></figure>
+
+<h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><p>我们使用<code>SELECT</code>查询时，细心的读者可能注意到，查询结果集通常是按照id排序的，也就是根据主键排序。这也是大部分数据库的做法。如果我们要根据其他条件排序怎么办？可以加上<code>ORDER BY</code>子句。例如按照成绩从低到高进行排序：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> id, name, gender, score <span class="hljs-keyword">FROM</span> students <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> score;<br></code></pre></td></tr></table></figure>
+
+<p>如果要反过来，按照成绩从高到底排序，我们可以加上<code>DESC</code>表示“倒序”：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> id, name, gender, score <span class="hljs-keyword">FROM</span> students<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> score <span class="hljs-keyword">DESC</span>;<br></code></pre></td></tr></table></figure>
+<p>如果<code>score</code>列有相同的数据，要进一步排序，可以继续添加列名。例如，使用<code>ORDER BY score DESC, gender</code>表示先按<code>score</code>列倒序，如果有相同分数的，再按<code>gender</code>列排序：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> id, name, gender, score <span class="hljs-keyword">FROM</span> students <br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> score <span class="hljs-keyword">DESC</span>, gender;<br></code></pre></td></tr></table></figure>
+
+<p>默认的排序规则是<code>ASC</code>：“升序”，即从小到大。<code>ASC</code>可以省略，即<code>ORDER BY score ASC</code>和<code>ORDER BY score</code>效果一样。</p>
+<p>如果有<code>WHERE</code>子句，那么<code>ORDER BY</code>子句要放到<code>WHERE</code>子句后面。例如，查询一班的学生成绩，并按照倒序排序：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> id, name, gender, score<br><span class="hljs-keyword">FROM</span> students<br><span class="hljs-keyword">WHERE</span> class_id <span class="hljs-operator">=</span> <span class="hljs-number">1</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> score <span class="hljs-keyword">DESC</span>;<br></code></pre></td></tr></table></figure>
+
+<p>这样，结果集仅包含符合<code>WHERE</code>条件的记录，并按照<code>ORDER BY</code>的设定排序。</p>
+<h2 id="分页查询"><a href="#分页查询" class="headerlink" title="分页查询"></a>分页查询</h2><p>使用SELECT查询时，如果结果集数据量很大，比如几万行数据，放在一个页面显示的话数据量太大，不如分页显示，每次显示100条。</p>
+<p>要实现分页功能，实际上就是从结果集中显示第1<del>100条记录作为第1页，显示第101</del>200条记录作为第2页，以此类推。</p>
+<p>因此，分页实际上就是从结果集中“截取”出第M~N条记录。这个查询可以通过LIMIT <N-M> OFFSET <M>子句实现。我们先把所有学生按照成绩从高到低进行排序：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> id, name, gender, score <span class="hljs-keyword">FROM</span> students <br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> score <span class="hljs-keyword">DESC</span>;<br></code></pre></td></tr></table></figure>
+<p><strong>查询结果：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">id</th>
+<th align="left">name</th>
+<th align="left">gender</th>
+<th align="left">score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">2</td>
+<td align="left">小红</td>
+<td align="left">F</td>
+<td align="left">95</td>
+</tr>
+<tr>
+<td align="left">8</td>
+<td align="left">小新</td>
+<td align="left">F</td>
+<td align="left">91</td>
+</tr>
+<tr>
+<td align="left">1</td>
+<td align="left">小明</td>
+<td align="left">M</td>
+<td align="left">90</td>
+</tr>
+<tr>
+<td align="left">9</td>
+<td align="left">小王</td>
+<td align="left">M</td>
+<td align="left">89</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">小军</td>
+<td align="left">M</td>
+<td align="left">88</td>
+</tr>
+<tr>
+<td align="left">10</td>
+<td align="left">小丽</td>
+<td align="left">F</td>
+<td align="left">88</td>
+</tr>
+<tr>
+<td align="left">7</td>
+<td align="left">小林</td>
+<td align="left">M</td>
+<td align="left">85</td>
+</tr>
+<tr>
+<td align="left">5</td>
+<td align="left">小白</td>
+<td align="left">F</td>
+<td align="left">81</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">小米</td>
+<td align="left">F</td>
+<td align="left">73</td>
+</tr>
+<tr>
+<td align="left">6</td>
+<td align="left">小兵</td>
+<td align="left">M</td>
+<td align="left">55</td>
+</tr>
+</tbody></table>
+<p>现在，我们把结果集分页，每页2条记录。要获取第1页的记录，可以使用<code>LIMIT 2 OFFSET 0</code>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> id, name, gender, score<br><span class="hljs-keyword">FROM</span> students<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> score <span class="hljs-keyword">DESC</span><br>LIMIT <span class="hljs-number">2</span> <span class="hljs-keyword">OFFSET</span> <span class="hljs-number">0</span>;<br></code></pre></td></tr></table></figure>
+<p><strong>查询结果：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">id</th>
+<th align="left">name</th>
+<th align="left">gender</th>
+<th align="left">score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">2</td>
+<td align="left">小红</td>
+<td align="left">F</td>
+<td align="left">95</td>
+</tr>
+<tr>
+<td align="left">8</td>
+<td align="left">小新</td>
+<td align="left">F</td>
+<td align="left">91</td>
+</tr>
+</tbody></table>
+<p>上述查询<code>LIMIT 2 OFFSET 0</code>表示，对结果集<strong>从0号记录</strong>开始，<strong>最多取2条</strong>。注意SQL记录集的索引从0开始。</p>
+<p>如果要查询第2页，那么我们只需要“跳过”头2条记录，也就是对结果集从2号记录开始查询，把<code>OFFSET</code>设定为2：\</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> id, name, gender, score<br><span class="hljs-keyword">FROM</span> students<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> score <span class="hljs-keyword">DESC</span><br>LIMIT <span class="hljs-number">2</span> <span class="hljs-keyword">OFFSET</span> <span class="hljs-number">2</span>;<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p><code>OFFSET</code>是可选的，如果只写<code>LIMIT 15</code>，那么相当于<code>LIMIT 15 OFFSET 0</code>。</p>
+<p>在MySQL中，<code>LIMIT 15 OFFSET 30</code>还可以简写成<code>LIMIT 30, 15</code>。</p>
+<p>使用<code>LIMIT &lt;M&gt; OFFSET &lt;N&gt;</code>分页时，随着<strong>N</strong>越来越大，查询效率也会越来越低。</p>
+<h2 id="聚合查询"><a href="#聚合查询" class="headerlink" title="聚合查询"></a>聚合查询</h2><p>如果我们要统计一张表的数据量，例如，想查询<code>students</code>表一共有多少条记录，难道必须用<code>SELECT * FROM students</code>查出来然后再数一数有多少行吗？</p>
+<p>这个方法当然可以，但是比较弱智。<strong>对于统计总数、平均数这类计算，SQL提供了专门的聚合函数</strong>，使用聚合函数进行查询，就是聚合查询，它可以快速获得结果。</p>
+<p>仍然以查询<code>students</code>表一共有多少条记录为例，我们可以使用SQL内置的<code>COUNT()</code>函数查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> students;<br></code></pre></td></tr></table></figure>
+<p><strong>查询结果：</strong><br><code>10</code></p>
+<p><code>COUNT(*)</code><strong>表示查询所有列的行数</strong>，要注意聚合的计算结果虽然是一个数字，但查询的结果仍然是一个二维表，只是这个二维表只有一行一列，并且列名是<code>COUNT(*)</code>。</p>
+<p>通常，使用聚合查询时，我们应该给列名设置一个别名，便于处理结果：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">AS</span> num <span class="hljs-keyword">FROM</span> students;<br></code></pre></td></tr></table></figure>
+
+<p>&#96;&#96;COUNT(*)<code>和</code>COUNT(id)<code>实际上是一样的效果。另外注意，聚合查询同样可以使用</code>WHERE&#96;条件，因此我们可以方便地统计出有多少男生、多少女生、多少80分以上的学生等：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">AS</span> boys <span class="hljs-keyword">FROM</span> students <br><span class="hljs-keyword">WHERE</span> gender <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;M&#x27;</span>;<br></code></pre></td></tr></table></figure>
+<p><strong>查询结果：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">boys<br>5<br></code></pre></td></tr></table></figure>
+
+<p>除了<code>COUNT()</code>函数外，SQL还提供了如下聚合函数：</p>
+<table>
+<thead>
+<tr>
+<th align="left">函数</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>SUM</code></td>
+<td align="left">计算某一列的合计值，该列必须为数值类型</td>
+</tr>
+<tr>
+<td align="left"><code>AVG</code></td>
+<td align="left">计算某一列的平均值，该列必须为数值类型</td>
+</tr>
+<tr>
+<td align="left"><code>MAX</code></td>
+<td align="left">计算某一列的最大值</td>
+</tr>
+<tr>
+<td align="left"><code>MIN</code></td>
+<td align="left">计算某一列的最小值</td>
+</tr>
+</tbody></table>
+<p><strong>注意</strong>，<code>MAX()</code>和<code>MIN()</code>函数并不限于数值类型。如果是字符类型，<code>MAX()</code>和<code>MIN()</code>会返回排序最后和排序最前的字符。</p>
+<p>要统计男生的平均成绩，我们用下面的聚合查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">AVG</span>(score) <span class="hljs-keyword">AS</span> average <br><span class="hljs-keyword">FROM</span> students <br><span class="hljs-keyword">WHERE</span> gender <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;M&#x27;</span>;<br></code></pre></td></tr></table></figure>
+<p><strong>查询结果：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">average<br>81.4<br></code></pre></td></tr></table></figure>
+
+<p>如果我们要统计一班的学生数量，我们知道，可以用<code>SELECT COUNT(*) num FROM students WHERE class_id = 1;</code>。如果要继续统计二班、三班的学生数量，难道必须不断修改<code>WHERE</code>条件来执行<code>SELECT</code>语句吗？</p>
+<p>对于聚合查询，SQL还提供了“分组聚合”的功能。我们观察下面的聚合查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> class_id, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">AS</span> num <br><span class="hljs-keyword">FROM</span> students <br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> class_id;<br></code></pre></td></tr></table></figure>
+<p><strong>查询结果：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">class_id</th>
+<th align="left">num</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1</td>
+<td align="left">4</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">3</td>
+</tr>
+</tbody></table>
+<p>执行这个查询，<code>COUNT()</code>的结果不再是一个，而是3个，这是因为，<code>GROUP BY</code>子句指定了按<code>class_id</code>分组，因此，执行该<code>SELECT</code>语句时，会把<code>class_id</code>相同的列先分组，再分别计算，因此，得到了3行结果。</p>
+<h2 id="多表查询"><a href="#多表查询" class="headerlink" title="多表查询"></a>多表查询</h2><p><code>SELECT</code>查询不但可以从一张表查询数据，还可以从多张表同时查询数据。查询多张表的语法是：<code>SELECT * FROM &lt;表1&gt; &lt;表2&gt;</code>。</p>
+<p>例如，同时从<code>students</code>表和<code>classes</code>表的“乘积”，即查询数据，可以这么写：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> students, classes;<br></code></pre></td></tr></table></figure>
+
+<p><strong>查询结果：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">id</span>  class_id    name    gender  score   <span class="hljs-built_in">id</span>  name<br>1	1	小明	M	90	1	一班<br>1	1	小明	M	90	2	二班<br>1	1	小明	M	90	3	三班<br>1	1	小明	M	90	4	四班<br>2	1	小红	F	95	1	一班<br>2	1	小红	F	95	2	二班<br>2	1	小红	F	95	3	三班<br>2	1	小红	F	95	4	四班<br>3	1	小军	M	88	1	一班<br>3	1	小军	M	88	2	二班<br>3	1	小军	M	88	3	三班<br>3	1	小军	M	88	4	四班<br>4	1	小米	F	73	1	一班<br>4	1	小米	F	73	2	二班<br>4	1	小米	F	73	3	三班<br>4	1	小米	F	73	4	四班<br>5	2	小白	F	81	1	一班<br>5	2	小白	F	81	2	二班<br>5	2	小白	F	81	3	三班<br>5	2	小白	F	81	4	四班<br>6	2	小兵	M	55	1	一班<br>6	2	小兵	M	55	2	二班<br>6	2	小兵	M	55	3	三班<br>6	2	小兵	M	55	4	四班<br>7	2	小林	M	85	1	一班<br>7	2	小林	M	85	2	二班<br>7	2	小林	M	85	3	三班<br>7	2	小林	M	85	4	四班<br>8	3	小新	F	91	1	一班<br>8	3	小新	F	91	2	二班<br>8	3	小新	F	91	3	三班<br>8	3	小新	F	91	4	四班<br>9	3	小王	M	89	1	一班<br>9	3	小王	M	89	2	二班<br>9	3	小王	M	89	3	三班<br>9	3	小王	M	89	4	四班<br>10	3	小丽	F	88	1	一班<br>10	3	小丽	F	88	2	二班<br>10	3	小丽	F	88	3	三班<br>10	3	小丽	F	88	4	四班<br></code></pre></td></tr></table></figure>
+
+<p>这种一次查询两个表的数据，查询的结果也是一个二维表，它是<code>students</code>表和<code>classes</code>表的“乘积”，即<code>students</code>表的每一行与<code>classes</code>表的每一行都两两拼在一起返回。结果集的列数是<code>students</code>表和<code>classes</code>表的列数之和，行数是<code>students</code>表和<code>classes</code>表的<strong>行数之积</strong>。</p>
+<p>这种多表查询又称<strong>笛卡尔查询</strong>，<strong>使用笛卡尔查询时要非常小心，由于结果集是目标表的行数乘积，对两个各自有100行记录的表进行笛卡尔查询将返回1万条记录</strong>，对两个各自有1万行记录的表进行笛卡尔查询将返回1亿条记录。</p>
+<p>注意到FROM子句给表设置别名的语法是<code>FROM &lt;表名1&gt; AS &lt;别名1&gt;</code>, <code>&lt;表名2&gt; AS &lt;别名2&gt;</code>。这样我们用别名s和c分别表示<code>students</code>表和<code>classes</code>表。</p>
+<p><strong>多表查询也是可以添加WHERE条件的，我们来试试</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span><br>    s.id <span class="hljs-keyword">AS</span> sid,<br>    s.name,<br>    s.gender,<br>    s.score,<br>    c.id <span class="hljs-keyword">AS</span> cid,<br>    c.name cname<br><span class="hljs-keyword">FROM</span> students <span class="hljs-keyword">AS</span> s , classes <span class="hljs-keyword">AS</span> c<br><span class="hljs-keyword">WHERE</span> s.gender <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;M&#x27;</span> <span class="hljs-keyword">AND</span> c.id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br></code></pre></td></tr></table></figure>
+
+<p>查询结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">sid	name	gender	score	cid	cname<br>1	小明	M	90	1	一班<br>3	小军	M	88	1	一班<br>6	小兵	M	55	1	一班<br>7	小林	M	85	1	一班<br>9	小王	M	89	1	一班<br></code></pre></td></tr></table></figure>
+
+<p>这个查询的结果集每行记录都满足条件<code>s.gender = &#39;M&#39;</code>和<code>c.id = 1</code>。添加<code>WHERE</code>条件后结果集的数量大大减少了。</p>
+<p>使用多表查询可以获取<code>M x N</code>行记录；<br><strong>多表查询的结果集可能非常巨大，要小心使用。</strong></p>
+<h2 id="连接查询"><a href="#连接查询" class="headerlink" title="连接查询"></a>连接查询</h2><p>连接查询是另一种类型的多表查询。连接查询对多个表进行JOIN运算，简单地说，就是先确定一个主表作为结果集，然后，把其他表的行有选择性地“连接”在主表结果集上。</p>
+<p>例如，我们想要选出students表的所有学生信息，可以用一条简单的SELECT语句完成：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> s.id, s.name, s.class_id, s.gender, s.score <br><span class="hljs-keyword">FROM</span> students <span class="hljs-keyword">AS</span> s;<br></code></pre></td></tr></table></figure>
+
+<p>但是，假设我们希望结果集同时包含所在班级的名称，上面的结果集只有<code>class_id</code>列，缺少对应班级的<code>name</code>列。</p>
+<p>现在问题来了，存放班级名称的<code>name</code>列存储在<code>classes</code>表中，只有根据<code>students</code>表的<code>class_id</code>，找到<code>classes</code>表对应的行，再取出<code>name</code>列，就可以获得班级名称。</p>
+<p>这时，连接查询就派上了用场。我们先使用最常用的一种内连接——INNER JOIN来实现：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> s.id, s.name, s.class_id, c.name class_name, s.gender, s.score<br><span class="hljs-keyword">FROM</span> students <span class="hljs-keyword">AS</span> s<br><span class="hljs-keyword">INNER</span> <span class="hljs-keyword">JOIN</span> classes <span class="hljs-keyword">AS</span> c<br><span class="hljs-keyword">ON</span> s.class_id <span class="hljs-operator">=</span> c.id;<br></code></pre></td></tr></table></figure>
+
+<p><strong>查询结果：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">id</span>    name  class_id  class_name  gender  score<br>1	小明	1	一班	M	90<br>2	小红	1	一班	F	95<br>3	小军	1	一班	M	88<br>4	小米	1	一班	F	73<br>5	小白	2	二班	F	81<br>6	小兵	2	二班	M	55<br>7	小林	2	二班	M	85<br>8	小新	3	三班	F	91<br>9	小王	3	三班	M	89<br>10	小丽	3	三班	F	88<br></code></pre></td></tr></table></figure>
+
+<p>注意INNER JOIN查询的写法是：</p>
+<ol>
+<li>先<strong>确定主表</strong>，仍然使用<code>FROM &lt;表1&gt;</code>的语法；</li>
+<li>再<strong>确定需要连接的表</strong>，使用<code>INNER JOIN &lt;表2&gt;</code>的语法；</li>
+<li>然后<strong>确定连接条件</strong>，使用<code>ON &lt;条件...&gt;</code>，这里的条件是<code>s.class_id = c.id</code>，表示<code>students</code>表的<code>class_id</code>列与<code>classes</code>表的<code>id</code>列相同的行需要连接；</li>
+<li>可选：加上<code>WHERE</code>子句、<code>ORDER BY</code>等子句。</li>
+</ol>
+<p>使用别名不是必须的，但可以更好地简化查询语句。</p>
+<p>那什么是内连接（INNER JOIN）呢？先别着急，有内连接（INNER JOIN）就有外连接（OUTER JOIN）。我们把内连接查询改成外连接查询，看看效果：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> s.id, s.name, s.class_id, c.name class_name, s.gender, s.score<br><span class="hljs-keyword">FROM</span> students <span class="hljs-keyword">AS</span> s<br><span class="hljs-keyword">RIGHT</span> <span class="hljs-keyword">OUTER</span> <span class="hljs-keyword">JOIN</span> classes <span class="hljs-keyword">AS</span> c<br><span class="hljs-keyword">ON</span> s.class_id <span class="hljs-operator">=</span> c.id;<br></code></pre></td></tr></table></figure>
+
+<p><strong>查询结果：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">id</span>	name class_id class_name gender score<br>1	小明	1	一班	M	90<br>2	小红	1	一班	F	95<br>3	小军	1	一班	M	88<br>4	小米	1	一班	F	73<br>5	小白	2	二班	F	81<br>6	小兵	2	二班	M	55<br>7	小林	2	二班	M	85<br>8	小新	3	三班	F	91<br>9	小王	3	三班	M	89<br>10	小丽	3	三班	F	88<br>NULL	NULL	NULL	四班	NULL	NULL<br></code></pre></td></tr></table></figure>
+<p>执行上述<code>RIGHT OUTER JOIN</code>可以看到，和<code>INNER JOIN</code>相比，<code>RIGHT OUTER JOIN</code>多了一行，多出来的一行是“四班”，但是，学生相关的列如name、gender、score都为<code>NULL</code>。</p>
+<p>这也容易理解，因为根据<code>ON</code>条件<code>s.class_id = c.id</code>，<code>classes</code>表的<code>id=4</code>的行正是“四班”，但是，<code>students</code>表中并不存在<code>class_id=4</code>的行。</p>
+<p>有<code>RIGHT OUTER JOIN</code>，就有<code>LEFT OUTER JOIN</code>，以及<code>FULL OUTER JOIN</code>。它们的区别是：</p>
+<p><code>INNER JOIN</code>只返回同时存在于两张表的行数据，由于<code>students</code>表的<code>class_id</code>包含1，2，3，<code>classes表的id</code>包含1，2，3，4，所以，<code>INNER JOIN</code>根据条件<code>s.class_id = c.id</code>返回的结果集仅包含1，2，3。</p>
+<ul>
+<li><p><code>RIGHT OUTER JOIN</code>返回右表都存在的行。如果某一行仅在右表存在，那么结果集就会以NULL填充剩下的字段。</p>
+</li>
+<li><p><code>LEFT OUTER JOIN</code>则返回左表都存在的行。如果我们给<code>students</code>表增加一行，并添加<code>class_id=5</code>，由于<code>classes</code>表并不存在<code>id=5</code>的行，所以，<code>LEFT OUTER JOIN的</code>结果会增加一行，对应的<code>class_name</code>是<code>NULL</code>。</p>
+</li>
+<li><p><code>FULL OUTER JOIN</code>，它会把两张表的所有记录全部选择出来，并且，自动把对方不存在的列填充为<code>NULL</code>。</p>
+</li>
+</ul>
+<img src="/img/SQL笔记/JOIN.png" srcset="/img/loading.gif" lazyload alt="连接查询" style="display: block; margin: 0 auto; width: 50%; height:50%;">
+
+<h3 id="注意-1"><a href="#注意-1" class="headerlink" title="注意"></a>注意</h3><p><code>JOIN</code>查询需要先确定主表，然后把另一个表的数据“附加”到结果集上；</p>
+<p><code>INNER JOIN</code>是最常用的一种<code>JOIN</code>查询，它的语法是<code>SELECT ... FROM &lt;表1&gt; INNER JOIN &lt;表2&gt; ON &lt;条件...&gt;；</code></p>
+<p><code>JOIN</code>查询仍然可以使用<code>WHERE</code>条件和<code>ORDER BY</code>排序。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/SQL/" class="category-chain-item">SQL</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/SQL/" class="print-no-link">#SQL</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/01/02/%E9%9D%A2%E7%BB%8F-python/" title="面经-python">
+                        <span class="hidden-mobile">面经-python</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
