@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/SQL%E7%AC%94%E8%AE%B0/JOIN.png">
 <meta property="article:published_time" content="2026-01-04T12:18:45.000Z">
-<meta property="article:modified_time" content="2026-01-04T13:57:29.520Z">
+<meta property="article:modified_time" content="2026-01-05T12:51:32.439Z">
 <meta property="article:author" content="Chengxiang">
 <meta property="article:tag" content="SQL">
 <meta name="twitter:card" content="summary_large_image">
@@ -230,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.8k 字
+          5.9k 字
         
       </span>
     
@@ -241,7 +241,7 @@
         
         
         
-          40 分钟
+          50 分钟
         
       </span>
     
@@ -901,6 +901,55 @@
 <h3 id="注意-1"><a href="#注意-1" class="headerlink" title="注意"></a>注意</h3><p><code>JOIN</code>查询需要先确定主表，然后把另一个表的数据“附加”到结果集上；</p>
 <p><code>INNER JOIN</code>是最常用的一种<code>JOIN</code>查询，它的语法是<code>SELECT ... FROM &lt;表1&gt; INNER JOIN &lt;表2&gt; ON &lt;条件...&gt;；</code></p>
 <p><code>JOIN</code>查询仍然可以使用<code>WHERE</code>条件和<code>ORDER BY</code>排序。</p>
+<h1 id="修改数据"><a href="#修改数据" class="headerlink" title="修改数据"></a>修改数据</h1><p>关系数据库的基本操作就是增删改查，即<code>CRUD</code>：<strong>Create、Retrieve、Update、Delete</strong>。其中，对于查询，我们已经详细讲述了<code>SELECT</code>语句的详细用法。</p>
+<p>而对于<strong>增、改、查</strong>，对应的SQL语句分别是：</p>
+<ul>
+<li><strong>INSERT</strong>：插入新记录；</li>
+<li><strong>UPDATE</strong>：更新已有记录；</li>
+<li><strong>DELETE</strong>：删除已有记录。</li>
+</ul>
+<p>我们将分别讨论这三种修改数据的语句的使用方法。</p>
+<h2 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a>插入数据</h2><p>当我们需要向数据库表中插入一条新记录时，就必须使用<code>INSERT</code>语句。</p>
+<p><code>INSERT</code>语句的基本语法是：<code>INSERT INTO &lt;表名&gt; (字段1, 字段2, ...) VALUES (值1, 值2, ...);</code></p>
+<p>例如，我们向students表插入一条新记录，先列举出需要插入的字段名称，然后在VALUES子句中依次写出对应字段的值：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-comment">-- 添加一条新记录:</span><br><span class="hljs-keyword">INSERT INTO</span> students (class_id, name, gender, score) <br><span class="hljs-keyword">VALUES</span> (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;大牛&#x27;</span>, <span class="hljs-string">&#x27;M&#x27;</span>, <span class="hljs-number">80</span>);<br><span class="hljs-comment">-- 查询并观察结果:</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> students;<br></code></pre></td></tr></table></figure>
+<p><strong>结果：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">id</span>  class_id    name  gender  score<br>1	1	小明	M	90<br>2	1	小红	F	95<br>3	1	小军	M	88<br>4	1	小米	F	73<br>5	2	小白	F	81<br>6	2	小兵	M	55<br>7	2	小林	M	85<br>8	3	小新	F	91<br>9	3	小王	M	89<br>10	3	小丽	F	88<br>11	2	大牛	M	80<br></code></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>，我们并没有列出<code>id</code>字段，也没有列出<code>id</code>字段对应的值，这是因为<code>id</code>字段是一个自增主键，它的值可以由数据库自己推算出来。此外，如果一个字段有默认值，那么在<code>INSERT</code>语句中也可以不出现。</p>
+<p>要注意，<strong><code>INSERT</code>字段顺序不必和数据库表的字段顺序一致，但值的顺序必须和<code>INSERT</code>字段顺序一致</strong>。<br>也就是说，可以写<code>INSERT INTO students (score, gender, name, class_id) ...</code>，但是对应的<code>VALUES</code>就得变成<code>(80, &#39;M&#39;, &#39;大牛&#39;, 2)</code>。</p>
+<p>还可以一次性添加多条记录，只需要在<code>VALUES</code>子句中指定多个记录值，每个记录是由(…)包含的一组值，每组值用逗号,分隔：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-comment">-- 一次性添加多条新记录:</span><br><span class="hljs-keyword">INSERT INTO</span> students (class_id, name, gender, score) <br><span class="hljs-keyword">VALUES</span><br>  (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;大宝&#x27;</span>, <span class="hljs-string">&#x27;M&#x27;</span>, <span class="hljs-number">87</span>),<br>  (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;二宝&#x27;</span>, <span class="hljs-string">&#x27;M&#x27;</span>, <span class="hljs-number">81</span>),<br>  (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;三宝&#x27;</span>, <span class="hljs-string">&#x27;M&#x27;</span>, <span class="hljs-number">83</span>);<br><span class="hljs-comment">-- 查询并观察结果:</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> students;<br></code></pre></td></tr></table></figure>
+
+<h2 id="更新数据"><a href="#更新数据" class="headerlink" title="更新数据"></a>更新数据</h2><p>如果要更新数据库表中的记录，我们就必须使用<code>UPDATE</code>语句。</p>
+<p><code>UPDATE</code>语句的基本语法是：<code>UPDATE &lt;表名&gt; SET 字段1=值1, 字段2=值2, ... WHERE ...;</code></p>
+<p>例如，我们想更新<code>students</code>表<code>id=1</code>的记录的<code>name</code>和<code>score</code>这两个字段，先写出<code>UPDATE students SET name=&#39;大牛&#39;, score=66</code>，然后在<code>WHERE子</code>句中写出需要更新的行的筛选条件<code>id=1</code>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-comment">-- 更新id=1的记录:</span><br><span class="hljs-keyword">UPDATE</span> students <span class="hljs-keyword">SET</span> name<span class="hljs-operator">=</span><span class="hljs-string">&#x27;大牛&#x27;</span>, score<span class="hljs-operator">=</span><span class="hljs-number">66</span> <span class="hljs-keyword">WHERE</span> id<span class="hljs-operator">=</span><span class="hljs-number">1</span>;<br><span class="hljs-comment">-- 查询并观察结果:</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> students <span class="hljs-keyword">WHERE</span> id<span class="hljs-operator">=</span><span class="hljs-number">1</span>;<br></code></pre></td></tr></table></figure>
+<p><strong>结果：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">id</span>   class_id   name    gender	score<br>1	1	大牛	M	66<br></code></pre></td></tr></table></figure>
+
+<p>注意到<code>UPDATE</code>语句的<code>WHERE</code>条件和<code>SELECT</code>语句的<code>WHERE</code>条件其实是一样的，因此完全可以一次更新多条记录：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-comment">-- 更新id=5,6,7的记录:</span><br><span class="hljs-keyword">UPDATE</span> students <span class="hljs-keyword">SET</span> name<span class="hljs-operator">=</span><span class="hljs-string">&#x27;小牛&#x27;</span>, score<span class="hljs-operator">=</span><span class="hljs-number">77</span> <br><span class="hljs-keyword">WHERE</span> id<span class="hljs-operator">&gt;=</span><span class="hljs-number">5</span> <span class="hljs-keyword">AND</span> id<span class="hljs-operator">&lt;=</span><span class="hljs-number">7</span>;<br><span class="hljs-comment">-- 查询并观察结果:</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> students;<br></code></pre></td></tr></table></figure>
+
+<p>在<code>UPDATE</code>语句中，更新字段时可以使用表达式。例如，把所有80分以下的同学的成绩加10分：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-comment">-- 更新score&lt;80的记录:</span><br><span class="hljs-keyword">UPDATE</span> students <span class="hljs-keyword">SET</span> score<span class="hljs-operator">=</span>score<span class="hljs-operator">+</span><span class="hljs-number">10</span> <br><span class="hljs-keyword">WHERE</span> score<span class="hljs-operator">&lt;</span><span class="hljs-number">80</span>;<br><span class="hljs-comment">-- 查询并观察结果:</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> students;<br></code></pre></td></tr></table></figure>
+<p>其中，<code>SET score=score+10</code>就是给当前行的<code>score</code>字段的值加上了<code>10</code>。</p>
+<p><strong>如果<code>WHERE</code>条件没有匹配到任何记录，<code>UPDATE</code>语句不会报错，也不会有任何记录被更新。</strong></p>
+<h2 id="删除数据"><a href="#删除数据" class="headerlink" title="删除数据"></a>删除数据</h2><p>如果要删除数据库表中的记录，我们可以使用<code>DELETE</code>语句。</p>
+<p><code>DELETE</code>语句的基本语法是：<code>DELETE FROM &lt;表名&gt; WHERE ...;</code></p>
+<p>例如，我们想删除<code>students</code>表中<code>id=1</code>的记录，就需要这么写：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-comment">-- 删除id=1的记录:</span><br><span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> students <span class="hljs-keyword">WHERE</span> id<span class="hljs-operator">=</span><span class="hljs-number">1</span>;<br><span class="hljs-comment">-- 查询并观察结果:</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> students;<br></code></pre></td></tr></table></figure>
+<p><strong>结果：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">id</span>	class_id	name	gender	score<br>2	1	小红	F	95<br>3	1	小军	M	88<br>4	1	小米	F	73<br>5	2	小白	F	81<br>6	2	小兵	M	55<br>7	2	小林	M	85<br>8	3	小新	F	91<br>9	3	小王	M	89<br>10	3	小丽	F	88<br></code></pre></td></tr></table></figure>
+<p>注意到<code>DELETE</code>语句的<code>WHERE</code>条件也是用来筛选需要删除的行，因此和<code>UPDATE</code>类似，<code>DELETE</code>语句也可以一次删除多条记录：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-comment">-- 删除id=5,6,7的记录:</span><br><span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> students <br><span class="hljs-keyword">WHERE</span> id<span class="hljs-operator">&gt;=</span><span class="hljs-number">5</span> <span class="hljs-keyword">AND</span> id<span class="hljs-operator">&lt;=</span><span class="hljs-number">7</span>;<br><span class="hljs-comment">-- 查询并观察结果:</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> students;<br></code></pre></td></tr></table></figure>
+<p><strong>结果：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">id</span>	class_id	name	gender	score<br>2	1	小红	F	95<br>3	1	小军	M	88<br>4	1	小米	F	73<br>8	3	小新	F	91<br>9	3	小王	M	89<br>10	3	小丽	F	88<br></code></pre></td></tr></table></figure>
+<p><strong>如果<code>WHERE</code>条件没有匹配到任何记录，<code>DELETE</code>语句不会报错，也不会有任何记录被删除。</strong></p>
+<p>最后，要特别小心的是，和<code>UPDATE</code>类似，<strong>不带<code>WHERE</code>条件的<code>DELETE</code>语句会删除整个表的数据</strong>：<code>DELETE FROM students;</code></p>
+<p>所以，在执行<code>DELETE</code>语句时也要非常小心，最好先用<code>SELECT</code>语句来测试<code>WHERE</code>条件是否筛选出了期望的记录集，然后再用<code>DELETE</code>删除。</p>
+<h1 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h1><p>本文转载自：<a target="_blank" rel="noopener" href="https://liaoxuefeng.com/books/sql/introduction/index.html">https://liaoxuefeng.com/books/sql/introduction/index.html</a></p>
+<p>仅供个人学习。</p>
 
                 
               </div>
